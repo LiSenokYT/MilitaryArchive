@@ -1,40 +1,53 @@
-module.exports = async (req, res) => {
-  if (req.method !== 'PUT') {
-    return res.status(405).json({ error: 'Method not allowed' });
+export default async function handler(request) {
+  if (request.method === 'OPTIONS') {
+    return new Response(null, {
+      status: 200,
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET,OPTIONS,PATCH,DELETE,POST,PUT',
+        'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+      }
+    });
+  }
+
+  if (request.method !== 'PUT') {
+    return new Response(JSON.stringify({ error: 'Method not allowed' }), {
+      status: 405,
+      headers: { 
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*'
+      }
+    });
   }
 
   try {
-    const { id } = req.query;
-    const updateData = req.body;
-
-    // Здесь будет обновление пользователя в БД
-    const users = await getUsers();
-    const userIndex = users.findIndex(u => u.id === id);
+    const updateData = await request.json();
     
-    if (userIndex === -1) {
-      return res.status(404).json({ error: 'Пользователь не найден' });
-    }
-
-    // Обновляем только разрешенные поля
-    users[userIndex] = {
-      ...users[userIndex],
-      profile: {
-        ...users[userIndex].profile,
-        ...updateData
+    const response = {
+      message: 'Профиль обновлен',
+      user: {
+        id: '1',
+        username: 'demo_user',
+        email: 'demo@example.com',
+        profile: { ...updateData, favorites: [] }
       }
     };
 
-    await saveUsers(users);
-
-    const { password, ...updatedUser } = users[userIndex];
-
-    res.json({
-      message: 'Профиль обновлен',
-      user: updatedUser
+    return new Response(JSON.stringify(response), {
+      status: 200,
+      headers: { 
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*'
+      }
     });
 
   } catch (error) {
-    console.error('Update user error:', error);
-    res.status(500).json({ error: 'Ошибка сервера' });
+    return new Response(JSON.stringify({ error: 'Ошибка сервера' }), {
+      status: 500,
+      headers: { 
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*'
+      }
+    });
   }
-};
+}
