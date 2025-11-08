@@ -234,6 +234,63 @@
             transform: translateY(-3px);
             box-shadow: 0 6px 20px rgba(212, 175, 55, 0.4);
         }
+
+        /* Стили для выпадающего меню пользователя */
+        .user-dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: rgba(26, 34, 50, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 8px;
+            padding: 0.5rem 0;
+            min-width: 200px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+        }
+
+        .dropdown-menu.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 0.75rem 1rem;
+            color: var(--text-light);
+            text-decoration: none;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 0.9rem;
+        }
+
+        .dropdown-item:hover {
+            background: rgba(212, 175, 55, 0.1);
+            color: var(--accent-gold);
+        }
+
+        .dropdown-divider {
+            height: 1px;
+            background: rgba(212, 175, 55, 0.2);
+            margin: 0.5rem 0;
+        }
         
         /* Главный баннер */
         .hero {
@@ -710,11 +767,12 @@
                         <li><a href="#">Исторические периоды</a></li>
                     </ul>
                 </nav>
-                <div class="nav-actions">
+                <div class="nav-actions" id="navActions">
+                    <!-- Здесь будет динамически меняться контент в зависимости от авторизации -->
                     <button class="icon-btn">
                         <i class="fas fa-bookmark"></i>
                     </button>
-                    <a href="registration.html" class="icon-btn">
+                    <a href="login.html" class="icon-btn">
                         <i class="fas fa-user"></i>
                     </a>
                 </div>
@@ -1009,9 +1067,103 @@
         </div>
     </footer>
 
-    <script src="auth.js"></script>
+    <script>
+        // Проверяем авторизацию и обновляем навигацию
+        function updateNavigation() {
+            const currentUser = JSON.parse(localStorage.getItem('armor_archive_current_user') || 'null');
+            const navActions = document.getElementById('navActions');
+            
+            if (!navActions) return;
+            
+            if (currentUser) {
+                // Пользователь авторизован - показываем меню
+                navActions.innerHTML = `
+                    <button class="icon-btn" id="favoritesBtn">
+                        <i class="fas fa-bookmark"></i>
+                    </button>
+                    <div class="user-dropdown">
+                        <button class="icon-btn" id="userMenuBtn">
+                            <i class="fas fa-user"></i>
+                        </button>
+                        <div class="dropdown-menu">
+                            <a href="profile.html" class="dropdown-item">
+                                <i class="fas fa-user-circle"></i> Мой профиль
+                            </a>
+                            <a href="favorites.html" class="dropdown-item">
+                                <i class="fas fa-bookmark"></i> Избранное
+                            </a>
+                            <div class="dropdown-divider"></div>
+                            <button class="dropdown-item" id="logoutBtn">
+                                <i class="fas fa-sign-out-alt"></i> Выйти
+                            </button>
+                        </div>
+                    </div>
+                `;
+                
+                // Добавляем обработчики для выпадающего меню
+                const userMenuBtn = document.getElementById('userMenuBtn');
+                const dropdownMenu = document.querySelector('.dropdown-menu');
+                const logoutBtn = document.getElementById('logoutBtn');
+                
+                if (userMenuBtn) {
+                    userMenuBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        dropdownMenu.classList.toggle('show');
+                    });
+                }
+                
+                if (logoutBtn) {
+                    logoutBtn.addEventListener('click', () => {
+                        localStorage.removeItem('armor_archive_current_user');
+                        window.location.reload();
+                    });
+                }
+                
+                // Закрываем меню при клике вне его
+                document.addEventListener('click', () => {
+                    if (dropdownMenu) {
+                        dropdownMenu.classList.remove('show');
+                    }
+                });
+                
+            } else {
+                // Пользователь не авторизован - показываем обычные кнопки
+                navActions.innerHTML = `
+                    <button class="icon-btn">
+                        <i class="fas fa-bookmark"></i>
+                    </button>
+                    <a href="login.html" class="icon-btn">
+                        <i class="fas fa-user"></i>
+                    </a>
+                `;
+            }
+        }
+        
+        // Обновляем навигацию при загрузке страницы
+        document.addEventListener('DOMContentLoaded', updateNavigation);
+
+        // Создаем демо-пользователя при первом посещении (если нужно)
+        document.addEventListener('DOMContentLoaded', function() {
+            const users = JSON.parse(localStorage.getItem('armor_archive_users') || '[]');
+            if (users.length === 0) {
+                const demoUser = {
+                    id: 'demo123',
+                    username: 'demo',
+                    email: 'demo@armorarchive.ru',
+                    password: btoa(unescape(encodeURIComponent('demo123'))),
+                    createdAt: new Date().toISOString(),
+                    profile: {
+                        firstName: 'Демо',
+                        lastName: 'Пользователь',
+                        avatar: '',
+                        bio: 'Любитель военной техники',
+                        favorites: []
+                    }
+                };
+                users.push(demoUser);
+                localStorage.setItem('armor_archive_users', JSON.stringify(users));
+            }
+        });
+    </script>
 </body>
-
 </html>
-
-
