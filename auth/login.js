@@ -1,6 +1,10 @@
-const bcrypt = require('bcryptjs');
+import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
 
-module.exports = async (req, res) => {
+// Временное хранилище (то же самое что в register.js)
+let users = [];
+
+export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
@@ -12,7 +16,6 @@ module.exports = async (req, res) => {
       return res.status(400).json({ error: 'Email и пароль обязательны' });
     }
 
-    const users = await getUsers();
     const user = users.find(u => u.email === email);
 
     if (!user) {
@@ -25,7 +28,11 @@ module.exports = async (req, res) => {
       return res.status(401).json({ error: 'Неверный email или пароль' });
     }
 
-    const token = createToken(user.id);
+    const token = jwt.sign(
+      { userId: user.id },
+      process.env.JWT_SECRET || 'fallback-secret',
+      { expiresIn: '7d' }
+    );
 
     res.json({
       message: 'Вход выполнен успешно',
@@ -42,4 +49,4 @@ module.exports = async (req, res) => {
     console.error('Login error:', error);
     res.status(500).json({ error: 'Ошибка сервера' });
   }
-};
+}
