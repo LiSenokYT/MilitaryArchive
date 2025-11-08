@@ -1,7 +1,7 @@
-export default async function handler(request) {
+export default function handler(request) {
   return new Response(JSON.stringify({ 
-    message: 'API работает!',
-    timestamp: new Date().toISOString()
+    message: 'Hello World!',
+    working: true 
   }), {
     status: 200,
     headers: { 
