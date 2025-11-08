@@ -1,7 +1,11 @@
-const bcrypt = require('bcryptjs');
-const { v4: uuidv4 } = require('uuid');
+import bcrypt from 'bcryptjs';
+import { v4 as uuidv4 } from 'uuid';
+import jwt from 'jsonwebtoken';
 
-module.exports = async (req, res) => {
+// Временное хранилище (замени на реальную БД позже)
+let users = [];
+
+export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
@@ -18,10 +22,6 @@ module.exports = async (req, res) => {
       return res.status(400).json({ error: 'Пароль должен быть минимум 6 символов' });
     }
 
-    // Здесь будет подключение к базе данных
-    // Для демо используем временное хранилище
-    const users = await getUsers();
-    
     // Проверка существующего пользователя
     if (users.find(u => u.email === email)) {
       return res.status(400).json({ error: 'Пользователь с таким email уже существует' });
@@ -52,10 +52,13 @@ module.exports = async (req, res) => {
 
     // Сохранение пользователя
     users.push(newUser);
-    await saveUsers(users);
 
     // Создание JWT токена
-    const token = createToken(newUser.id);
+    const token = jwt.sign(
+      { userId: newUser.id }, 
+      process.env.JWT_SECRET || 'fallback-secret', 
+      { expiresIn: '7d' }
+    );
 
     res.status(201).json({
       message: 'Регистрация успешна',
@@ -72,21 +75,4 @@ module.exports = async (req, res) => {
     console.error('Registration error:', error);
     res.status(500).json({ error: 'Ошибка сервера' });
   }
-};
-
-// Временные функции для демо (замените на реальную БД)
-async function getUsers() {
-  // Здесь можно использовать Vercel KV, MongoDB, или другую БД
-  return [];
-}
-
-async function saveUsers(users) {
-  // Сохранение в выбранную БД
-}
-
-function createToken(userId) {
-  const jwt = require('jsonwebtoken');
-  return jwt.sign({ userId }, process.env.JWT_SECRET || 'fallback-secret', { 
-    expiresIn: '7d' 
-  });
 }
