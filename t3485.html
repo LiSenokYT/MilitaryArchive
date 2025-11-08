@@ -81,7 +81,7 @@
             z-index: 10;
         }
         
-        /* Шапка сайта из первого кода */
+        /* Шапка сайта */
         header {
             background: rgba(26, 34, 50, 0.95);
             backdrop-filter: blur(10px);
@@ -391,17 +391,23 @@
             line-height: 1.1;
         }
         
-        .country-tag {
+        .country-flag {
+            display: flex;
+            align-items: center;
+            gap: 10px;
             background: rgba(212, 175, 55, 0.1);
             padding: 8px 20px;
             border-radius: 30px;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 8px;
             color: var(--accent-gold);
-            flex-shrink: 0;
-            margin-left: 15px;
+            font-weight: 600;
+        }
+        
+        .flag-icon {
+            width: 24px;
+            height: 16px;
+            background: linear-gradient(180deg, #fff 33%, #d52b1e 33%, #d52b1e 66%, #0039a6 66%);
+            border: 1px solid rgba(255,255,255,0.3);
+            border-radius: 2px;
         }
         
         .vehicle-subtitle {
@@ -469,37 +475,58 @@
             align-items: center;
             gap: 12px;
             background: rgba(26, 34, 50, 0.5);
-            padding: 10px;
+            padding: 15px;
             border-radius: 8px;
             border: 1px solid rgba(212, 175, 55, 0.1);
         }
         
         .spec-icon {
-            width: 40px;
-            height: 40px;
+            width: 45px;
+            height: 45px;
             border-radius: 8px;
             background: rgba(212, 175, 55, 0.1);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.2rem;
+            font-size: 1.3rem;
             color: var(--accent-gold);
         }
         
         .spec-content h4 {
             color: var(--accent-gold-light);
             margin-bottom: 4px;
+            font-size: 1rem;
         }
         
         .spec-content p {
             color: var(--text-light);
             font-weight: 500;
+            font-size: 1.1rem;
+        }
+        
+        .detailed-specs {
+            background: rgba(26, 34, 50, 0.5);
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-top: 1.5rem;
+            border: 1px solid rgba(212, 175, 55, 0.1);
+        }
+        
+        .specs-category {
+            margin-bottom: 1.5rem;
+        }
+        
+        .specs-category h3 {
+            color: var(--accent-gold);
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+            padding-bottom: 0.5rem;
         }
         
         .specs-table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 1rem;
         }
         
         .specs-table tr {
@@ -507,25 +534,238 @@
         }
         
         .specs-table td {
-            padding: 12px 15px;
+            padding: 10px 15px;
         }
         
         .spec-name {
             color: var(--accent-gold-light);
             width: 40%;
             font-weight: 500;
+            font-size: 0.9rem;
         }
         
         .spec-value {
             color: var(--text-light);
+            font-size: 0.9rem;
         }
         
         .vehicle-history-text {
             line-height: 1.8;
         }
         
-        .vehicle-history-text p {
-            margin-bottom: 1.2rem;
+        .history-section {
+            margin-bottom: 2rem;
+        }
+        
+        .history-section h3 {
+            color: var(--accent-gold);
+            margin-bottom: 1rem;
+            font-size: 1.3rem;
+        }
+        
+        .history-section p {
+            margin-bottom: 1rem;
+            text-align: justify;
+        }
+        
+        .history-highlight {
+            background: rgba(212, 175, 55, 0.05);
+            border-left: 3px solid var(--accent-gold);
+            padding: 1rem 1.5rem;
+            margin: 1.5rem 0;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        /* Эволюция танка */
+        .evolution-timeline {
+            margin: 3rem 0;
+            grid-column: span 2;
+        }
+        
+        .evolution-header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+        
+        .evolution-header h2 {
+            color: var(--accent-gold);
+            margin-bottom: 0.5rem;
+            font-size: 2.2rem;
+        }
+        
+        .evolution-header p {
+            color: var(--text-gray);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .timeline {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            margin: 3rem 0;
+        }
+        
+        .timeline::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: rgba(212, 175, 55, 0.3);
+            z-index: 1;
+        }
+        
+        .evolution-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            flex: 1;
+        }
+        
+        .step-connector {
+            flex: 1;
+            height: 2px;
+            background: rgba(212, 175, 55, 0.3);
+            margin: 0 10px;
+        }
+        
+        .step-icon {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: rgba(26, 34, 50, 0.8);
+            border: 2px solid var(--accent-gold);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: var(--accent-gold);
+            margin-bottom: 1rem;
+            transition: var(--transition);
+        }
+        
+        .evolution-step:hover .step-icon {
+            background: var(--accent-gold);
+            color: var(--dark-base);
+            transform: scale(1.1);
+        }
+        
+        .step-content {
+            background: rgba(26, 34, 50, 0.7);
+            padding: 1.5rem;
+            border-radius: 10px;
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            max-width: 250px;
+        }
+        
+        .step-content h3 {
+            color: var(--accent-gold-light);
+            margin-bottom: 0.5rem;
+            font-size: 1.2rem;
+        }
+        
+        .step-years {
+            color: var(--accent-gold);
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        
+        .step-content p {
+            color: var(--text-gray);
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+            min-height: 4rem;
+        }
+        
+        .step-link {
+            display: inline-block;
+            padding: 8px 16px;
+            background: transparent;
+            color: var(--accent-gold);
+            border: 1px solid var(--accent-gold);
+            border-radius: 20px;
+            text-decoration: none;
+            font-size: 0.8rem;
+            transition: var(--transition);
+        }
+        
+        .step-link:hover {
+            background: rgba(212, 175, 55, 0.1);
+        }
+        
+        /* Модификации */
+        .modifications-section {
+            margin: 3rem 0;
+            grid-column: span 2;
+        }
+        
+        .modifications-header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+        
+        .modifications-header h2 {
+            color: var(--accent-gold);
+            margin-bottom: 0.5rem;
+        }
+        
+        .modifications-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+        
+        .modification-card {
+            background: rgba(26, 34, 50, 0.7);
+            border-radius: 10px;
+            padding: 1.5rem;
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            transition: var(--transition);
+        }
+        
+        .modification-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(212, 175, 55, 0.4);
+            box-shadow: 0 10px 25px rgba(212, 175, 55, 0.1);
+        }
+        
+        .modification-card h3 {
+            color: var(--accent-gold-light);
+            margin-bottom: 1rem;
+            font-size: 1.3rem;
+        }
+        
+        .modification-features {
+            list-style: none;
+            margin-bottom: 1.5rem;
+        }
+        
+        .modification-features li {
+            margin-bottom: 0.5rem;
+            padding-left: 1.2rem;
+            position: relative;
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+        
+        .modification-features li::before {
+            content: '•';
+            position: absolute;
+            left: 0;
+            color: var(--accent-gold);
+        }
+        
+        .modification-stats {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            color: var(--text-gray);
         }
         
         /* График производства */
@@ -535,116 +775,6 @@
             background: rgba(26, 34, 50, 0.5);
             border-radius: 8px;
             padding: 15px;
-        }
-        
-        /* Похожие танки */
-        .similar-vehicles {
-            margin: 4rem 0;
-            grid-column: span 2;
-        }
-        
-        .similar-header {
-            text-align: center;
-            margin-bottom: 2.5rem;
-        }
-        
-        .similar-header h2 {
-            color: var(--accent-gold);
-            margin-bottom: 0.5rem;
-        }
-        
-        .similar-header p {
-            color: var(--text-gray);
-            max-width: 600px;
-            margin: 0 auto;
-        }
-        
-        .vehicle-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 2rem;
-        }
-        
-        .vehicle-card {
-            background: rgba(26, 34, 50, 0.7);
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
-            transition: var(--transition);
-            border: 1px solid rgba(212, 175, 55, 0.2);
-        }
-        
-        .vehicle-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 15px 30px rgba(212, 175, 55, 0.2);
-            border-color: rgba(212, 175, 55, 0.4);
-        }
-        
-        .vehicle-card-image {
-            height: 200px;
-            overflow: hidden;
-            position: relative;
-        }
-        
-        .vehicle-card-image img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform 0.5s ease;
-        }
-        
-        .vehicle-card:hover .vehicle-card-image img {
-            transform: scale(1.05);
-        }
-        
-        .vehicle-card-country {
-            position: absolute;
-            top: 15px;
-            left: 15px;
-            background: rgba(12, 14, 20, 0.9);
-            padding: 6px 15px;
-            border-radius: 20px;
-            color: var(--accent-gold);
-            font-size: 0.85rem;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .vehicle-card-content {
-            padding: 1.5rem;
-        }
-        
-        .vehicle-card-content h3 {
-            margin-bottom: 10px;
-            font-size: 1.5rem;
-            color: var(--accent-gold-light);
-        }
-        
-        .vehicle-card-content p {
-            margin-bottom: 1.5rem;
-            color: var(--text-gray);
-            font-size: 0.9rem;
-            min-height: 4rem;
-        }
-        
-        .vehicle-card-btn {
-            display: block;
-            width: 100%;
-            text-align: center;
-            padding: 10px;
-            background: transparent;
-            color: var(--accent-gold);
-            border: 1px solid var(--accent-gold);
-            border-radius: 50px;
-            text-decoration: none;
-            font-weight: 500;
-            transition: var(--transition);
-        }
-        
-        .vehicle-card-btn:hover {
-            background: rgba(212, 175, 55, 0.1);
         }
         
         /* Подвал сайта */
@@ -753,6 +883,19 @@
             .main-image {
                 height: 400px;
             }
+            
+            .timeline {
+                flex-direction: column;
+                gap: 2rem;
+            }
+            
+            .timeline::before {
+                display: none;
+            }
+            
+            .step-connector {
+                display: none;
+            }
         }
         
         @media (max-width: 768px) {
@@ -771,24 +914,14 @@
                 grid-template-columns: 1fr;
             }
             
-            .vehicle-grid {
-                grid-template-columns: 1fr;
-            }
-            
             .vehicle-title {
                 flex-direction: column;
                 align-items: flex-start;
             }
             
-            .country-tag {
+            .country-flag {
                 margin-left: 0;
                 margin-top: 10px;
-            }
-        }
-        
-        @media (max-width: 480px) {
-            .vehicle-title h1 {
-                font-size: 2rem;
             }
             
             .thumbnail-container {
@@ -799,6 +932,20 @@
                 padding: 10px;
                 font-size: 0.9rem;
             }
+            
+            .modifications-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .vehicle-title h1 {
+                font-size: 2rem;
+            }
+            
+            .step-content {
+                max-width: 100%;
+            }
         }
     </style>
 </head>
@@ -808,7 +955,7 @@
     <div class="gold-dot dot-1"></div>
     <div class="gold-dot dot-2"></div>
     
-    <!-- Шапка сайта из первого кода -->
+    <!-- Шапка сайта -->
     <header>
         <div class="container">
             <div class="header-content">
@@ -820,17 +967,17 @@
                     <ul>
                         <li><a href="index.html">Главная</a></li>
                         <li><a href="tanks.html" class="active">Танки</a></li>
-                        <li><a href="#">Самолёты</a></li>
-                        <li><a href="#">Корабли</a></li>
-                        <li><a href="#">Артиллерия</a></li>
-                        <li><a href="#">Исторические периоды</a></li>
+                        <li><a href="planes.html">Самолёты</a></li>
+                        <li><a href="ships.html">Корабли</a></li>
+                        <li><a href="artillery.html">Артиллерия</a></li>
+                        <li><a href="history.html">Исторические периоды</a></li>
                     </ul>
                 </nav>
                 <div class="nav-actions">
                     <button class="icon-btn">
                         <i class="fas fa-bookmark"></i>
                     </button>
-                    <a href="registration.html" class="icon-btn">
+                    <a href="login.html" class="icon-btn">
                         <i class="fas fa-user"></i>
                     </a>
                 </div>
@@ -841,9 +988,9 @@
     <!-- Хлебные крошки -->
     <div class="container">
         <div class="breadcrumb">
-            <a href="#">Главная</a>
+            <a href="index.html">Главная</a>
             <i class="fas fa-chevron-right"></i>
-            <a href="#">Танки</a>
+            <a href="tanks.html">Танки</a>
             <i class="fas fa-chevron-right"></i>
             <a href="#">Советские танки</a>
             <i class="fas fa-chevron-right"></i>
@@ -892,11 +1039,12 @@
                 <div class="vehicle-header">
                     <div class="vehicle-title">
                         <h1>Т-34-85</h1>
-                        <div class="country-tag">
-                            <i class="fas fa-flag"></i> СССР
+                        <div class="country-flag">
+                            <div class="flag-icon"></div>
+                            <span>СССР</span>
                         </div>
                     </div>
-                    <div class="vehicle-subtitle">«Оружие Победы» - символ освобождения Европы от нацизма</div>
+                    <div class="vehicle-subtitle">«Оружие Победы» - самый массовый средний танк Второй мировой войны</div>
                 </div>
                 
                 <div class="info-tabs">
@@ -914,8 +1062,8 @@
                                     <i class="fas fa-weight-hanging"></i>
                                 </div>
                                 <div class="spec-content">
-                                    <h4>Вес</h4>
-                                    <p>32 тонны</p>
+                                    <h4>Боевая масса</h4>
+                                    <p>32.0 тонны</p>
                                 </div>
                             </div>
                             <div class="spec-item">
@@ -923,8 +1071,8 @@
                                     <i class="fas fa-tachometer-alt"></i>
                                 </div>
                                 <div class="spec-content">
-                                    <h4>Скорость</h4>
-                                    <p>55 км/ч (по шоссе)</p>
+                                    <h4>Макс. скорость</h4>
+                                    <p>55 км/ч (шоссе)</p>
                                 </div>
                             </div>
                             <div class="spec-item">
@@ -932,8 +1080,8 @@
                                     <i class="fas fa-gun"></i>
                                 </div>
                                 <div class="spec-content">
-                                    <h4>Вооружение</h4>
-                                    <p>85-мм пушка ЗИС-С-53</p>
+                                    <h4>Основное вооружение</h4>
+                                    <p>85-мм ЗИС-С-53</p>
                                 </div>
                             </div>
                             <div class="spec-item">
@@ -941,8 +1089,8 @@
                                     <i class="fas fa-user-shield"></i>
                                 </div>
                                 <div class="spec-content">
-                                    <h4>Защита</h4>
-                                    <p>45-мм лобовая броня</p>
+                                    <h4>Лобовая броня</h4>
+                                    <p>45 мм (45° наклон)</p>
                                 </div>
                             </div>
                             <div class="spec-item">
@@ -956,70 +1104,181 @@
                             </div>
                             <div class="spec-item">
                                 <div class="spec-icon">
-                                    <i class="fas fa-calendar"></i>
+                                    <i class="fas fa-horse"></i>
                                 </div>
                                 <div class="spec-content">
-                                    <h4>Годы службы</h4>
-                                    <p>1943-1958</p>
+                                    <h4>Мощность двигателя</h4>
+                                    <p>500 л.с. (370 кВт)</p>
                                 </div>
                             </div>
                         </div>
                         
-                        <table class="specs-table">
-                            <tr>
-                                <td class="spec-name">Тип танка</td>
-                                <td class="spec-value">Средний танк</td>
-                            </tr>
-                            <tr>
-                                <td class="spec-name">Двигатель</td>
-                                <td class="spec-value">В-2-34, дизельный, 500 л.с.</td>
-                            </tr>
-                            <tr>
-                                <td class="spec-name">Запас хода</td>
-                                <td class="spec-value">400 км (по шоссе)</td>
-                            </tr>
-                            <tr>
-                                <td class="spec-name">Мощность двигателя</td>
-                                <td class="spec-value">500 л.с. (370 кВт)</td>
-                            </tr>
-                            <tr>
-                                <td class="spec-name">Габариты</td>
-                                <td class="spec-value">6,10 м × 3,00 м × 2,72 м</td>
-                            </tr>
-                            <tr>
-                                <td class="spec-name">Бронирование</td>
-                                <td class="spec-value">Лоб 45 мм, борт 45 мм, башня 90 мм</td>
-                            </tr>
-                        </table>
+                        <div class="detailed-specs">
+                            <div class="specs-category">
+                                <h3>⚙️ Общие характеристики</h3>
+                                <table class="specs-table">
+                                    <tr>
+                                        <td class="spec-name">Длина с пушкой</td>
+                                        <td class="spec-value">8.10 м</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="spec-name">Ширина</td>
+                                        <td class="spec-value">3.00 м</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="spec-name">Высота</td>
+                                        <td class="spec-value">2.72 м</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="spec-name">Клиренс</td>
+                                        <td class="spec-value">400 мм</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="spec-name">Удельное давление</td>
+                                        <td class="spec-value">0.83 кг/см²</td>
+                                    </tr>
+                                </table>
+                            </div>
+                            
+                            <div class="specs-category">
+                                <h3>🛡️ Бронирование</h3>
+                                <table class="specs-table">
+                                    <tr>
+                                        <td class="spec-name">Лоб корпуса</td>
+                                        <td class="spec-value">45 мм / 60°</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="spec-name">Борт корпуса</td>
+                                        <td class="spec-value">45 мм / 40°</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="spec-name">Лоб башни</td>
+                                        <td class="spec-value">90 мм</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="spec-name">Борт башни</td>
+                                        <td class="spec-value">75 мм</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="spec-name">Крыша/днище</td>
+                                        <td class="spec-value">20 мм / 16 мм</td>
+                                    </tr>
+                                </table>
+                            </div>
+                            
+                            <div class="specs-category">
+                                <h3>🎯 Вооружение</h3>
+                                <table class="specs-table">
+                                    <tr>
+                                        <td class="spec-name">Основное орудие</td>
+                                        <td class="spec-value">85-мм ЗИС-С-53 обр. 1944 г.</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="spec-name">Боекомплект</td>
+                                        <td class="spec-value">55-60 выстрелов</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="spec-name">Пулемёты</td>
+                                        <td class="spec-value">2 × 7.62-мм ДТМ</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="spec-name">Прицелы</td>
+                                        <td class="spec-value">ТШ-16, панорама ПТК-5</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="spec-name">Углы ВН</td>
+                                        <td class="spec-value">-5° до +25°</td>
+                                    </tr>
+                                </table>
+                            </div>
+                            
+                            <div class="specs-category">
+                                <h3>🚀 Подвижность</h3>
+                                <table class="specs-table">
+                                    <tr>
+                                        <td class="spec-name">Двигатель</td>
+                                        <td class="spec-value">В-2-34, V-12 дизельный</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="spec-name">Мощность</td>
+                                        <td class="spec-value">500 л.с. при 1800 об/мин</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="spec-name">Запас хода</td>
+                                        <td class="spec-value">400 км (шоссе), 250 км (пересечённая)</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="spec-name">Ёмкость баков</td>
+                                        <td class="spec-value">545 л + 270 л внешние</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="spec-name">Преодолеваемый подъём</td>
+                                        <td class="spec-value">35°</td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
                     </div>
                     
                     <!-- История -->
                     <div class="tab-pane" id="history">
                         <div class="vehicle-history-text">
-                            <p>Танк Т-34-85 - глубокая модернизация легендарного Т-34. Разработан в конце 1943 года в ответ на появление у немцев танков "Тигр" и "Пантера". Главным нововведением стала установка новой более просторной трёхместной башни с 85-мм пушкой, что значительно усиливало огневую мощь танка.</p>
+                            <div class="history-section">
+                                <h3>📅 Предпосылки создания</h3>
+                                <p>К концу 1943 года на фронтах Великой Отечественной войны сложилась критическая ситуация для советских танковых войск. Появление у вермахта новых тяжёлых танков "Тигр" и средних "Пантера" с мощной бронезащитой и дальнобойными орудиями поставило под угрозу преимущество Т-34. 76-мм пушка Ф-34 уже не могла эффективно бороться с новой немецкой бронетехникой на дистанциях свыше 500 метров.</p>
+                                
+                                <div class="history-highlight">
+                                    <p><strong>Ключевая проблема:</strong> на испытаниях выяснилось, что для гарантированного поражения "Тигра" требовалось подойти на дистанцию 200-300 метров, в то время как немецкий танк мог уничтожать Т-34 с расстояния 1500 метров.</p>
+                                </div>
+                            </div>
                             
-                            <p>Первые Т-34-85 поступили в войска весной 1944 года и приняли участие в операции "Багратион". Танк отличался хорошей подвижностью, технологичностью производства и превосходным сочетанием характеристик, которое немцы называли "принципом трёх Т": тактика, техника, тренировка.</p>
+                            <div class="history-section">
+                                <h3>🔧 Процесс разработки</h3>
+                                <p>Работы по усилению вооружения Т-34 начались летом 1943 года. Рассматривалось несколько вариантов: установка 85-мм зенитной пушки 52-К, разработка новой 85-мм танковой пушки, а также эксперименты с 122-мм орудиями. После всесторонних испытаний был выбран вариант с 85-мм пушкой в новой увеличенной башне.</p>
+                                
+                                <p>Главным конструктором модернизации стал Александр Морозов. Новая башня получила командирскую башенку с круговым обзором, что резко повысило ситуационную осведомлённость экипажа. Экипаж увеличился до 5 человек, выделив командира танка из функций наводчика.</p>
+                                
+                                <div class="history-highlight">
+                                    <p><strong>Инновация:</strong> Т-34-85 стал первым массовым советским танком с трёхместной башней, где командир освобождался от обязанностей наводчика, что значительно повышало эффективность управления в бою.</p>
+                                </div>
+                            </div>
                             
-                            <p>Т-34-85 стал основным танком заключительного этапа войны: от битвы на Курской дуге до штурма Берлина. В послевоенный период он состоял на вооружении СССР до 1958 года и активно экспортировался в более чем 40 стран. Участвовал в Корейской войне, многочисленных конфликтах на Ближнем Востоке, в Африке и Юго-Восточной Азии.</p>
+                            <div class="history-section">
+                                <h3>⚔️ Боевое применение</h3>
+                                <p>Первые Т-34-85 начали поступать в войска в марте 1944 года. Дебют нового танка состоялся durante операции "Багратион" летом 1944 года. Танк сразу показал свою эффективность - 85-мм пушка уверенно поражала "Пантеры" с дистанции 800-1000 метров, а "Тигры" - с 500-700 метров.</p>
+                                
+                                <p>Т-34-85 стал основным танком заключительного этапа войны. Он участвовал в освобождении Восточной Европы, штурме Берлина, разгроме Квантунской армии. Танк отличался исключительной ремонтопригодностью - среднее время восстановления подбитой машины составляло всего 24-48 часов.</p>
+                                
+                                <div class="history-highlight">
+                                    <p><strong>Боевая статистика:</strong> По оценкам историков, на один потерянный Т-34-85 приходилось 3-4 подбитых немецких танка. В уличных боях Берлина экипажи ценили новый танк за лучший обзор и возможность эффективно бороться с фаустпатронниками.</p>
+                                </div>
+                            </div>
                             
-                            <p>Т-34-85 заслуженно считается одним из лучших танков Второй мировой войны и символом победы над нацизмом. Его производство стало беспрецедентным по масштабам - всего было выпущено более 35 000 единиц различных модификаций.</p>
+                            <div class="history-section">
+                                <h3>🌍 Послевоенная служба</h3>
+                                <p>После войны Т-34-85 оставался на вооружении Советской Армии до конца 1950-х годов, а в некоторых учебных частях - до середины 1960-х. Танк активно экспортировался в страны Варшавского договора и государства "третьего мира".</p>
+                                
+                                <p>Т-34-85 участвовал в десятках локальных конфликтов: Корейская война (1950-1953), Вьетнамская война, арабо-израильские конфликты, война в Анголе. В некоторых странах Африки и Азии эти танки оставались на вооружении до начала XXI века.</p>
+                                
+                                <div class="history-highlight">
+                                    <p><strong>Наследие:</strong> Всего было выпущено около 35,000 Т-34-85 различных модификаций. Танк состоял на вооружении 46 стран мира, став самым распространённым танком в истории после Второй мировой войны.</p>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     
                     <!-- Производство -->
                     <div class="tab-pane" id="production">
                         <div class="vehicle-history-text">
-                            <p>Серийное производство Т-34-85 началось в январе 1944 года на заводах №183 в Нижнем Тагиле и №112 "Красное Сормово" в Горьком. К концу войны танк выпускался уже на семи заводах СССР.</p>
+                            <p>Серийное производство Т-34-85 было развёрнуто в рекордные сроки. Уже в январе 1944 года первые танки сошли с конвейера завода №183 в Нижнем Тагиле. К маю 1944 года к производству подключились завод №112 "Красное Сормово" в Горьком и завод №174 в Омске.</p>
                             
-                            <p>Объёмы производства:</p>
-                            <ul>
-                                <li>1944 год: 10 600 единиц</li>
-                                <li>1945 год: 14 700 единиц</li>
-                                <li>1946-1950: 7 300 единиц</li>
-                                <li>Всего: свыше 35 000 единиц</li>
-                            </ul>
+                            <p>Организация производства стала образцом советской военной промышленности. Конвейерная сборка, стандартизация узлов и агрегатов, круглосуточная работа в три смены позволили достичь невиданных темпов выпуска - до 1200 танков в месяц на пике производства.</p>
                             
-                            <p>После войны производство продолжилось в Польше и Чехословакии для поставок в страны Варшавского договора.</p>
+                            <div class="history-highlight">
+                                <p><strong>Производственные рекорды:</strong> Завод №183 в Нижнем Тагиле установил абсолютный рекорд - 658 танков за один месяц (апрель 1944 года). Средняя стоимость одного Т-34-85 составляла 164,000 рублей.</p>
+                            </div>
+                            
+                            <p>После войны производство продолжилось для восстановления танкового парка стран Восточной Европы. Лицензионный выпуск был налажен в Польше (1951-1955) и Чехословакии (1951-1958), где было произведено ещё около 4,500 машин.</p>
                         </div>
                         
                         <div class="production-chart" id="productionChart"></div>
@@ -1028,67 +1287,159 @@
             </div>
         </div>
         
-        <!-- Похожие танки -->
-        <div class="similar-vehicles">
-            <div class="similar-header">
-                <h2>Похожая техника</h2>
-                <p>Модификации и аналоги Т-34-85</p>
+        <!-- Эволюция танка -->
+        <div class="evolution-timeline">
+            <div class="evolution-header">
+                <h2>Эволюция советского среднего танка</h2>
+                <p>От первых прототипов до послевоенных разработок на базе Т-34</p>
             </div>
             
-            <div class="vehicle-grid">
-                <div class="vehicle-card">
-                    <div class="vehicle-card-image">
-                        <img src="https://images.unsplash.com/photo-1580485073230-573f84a74b2a?q=80&w=1470" alt="Т-34-76">
-                        <div class="vehicle-card-country">
-                            <i class="fas fa-flag"></i> СССР
-                        </div>
+            <div class="timeline">
+                <div class="evolution-step">
+                    <div class="step-icon">
+                        <i class="fas fa-seedling"></i>
                     </div>
-                    <div class="vehicle-card-content">
+                    <div class="step-content">
+                        <h3>БТ-7</h3>
+                        <div class="step-years">1935-1940</div>
+                        <p>Колёсно-гусеничный танк - предшественник концепции</p>
+                        <a href="bt7_detail.html" class="step-link">Изучить</a>
+                    </div>
+                </div>
+                
+                <div class="step-connector"></div>
+                
+                <div class="evolution-step">
+                    <div class="step-icon">
+                        <i class="fas fa-baby"></i>
+                    </div>
+                    <div class="step-content">
+                        <h3>А-20/А-32</h3>
+                        <div class="step-years">1939</div>
+                        <p>Прототипы, определившие концепцию Т-34</p>
+                        <a href="a20_detail.html" class="step-link">Изучить</a>
+                    </div>
+                </div>
+                
+                <div class="step-connector"></div>
+                
+                <div class="evolution-step">
+                    <div class="step-icon">
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <div class="step-content">
                         <h3>Т-34-76</h3>
-                        <p>Базовая версия с 76-мм пушкой и двухместной башней. Основной советский танк начала войны.</p>
-                        <a href="#" class="vehicle-card-btn">Подробнее</a>
+                        <div class="step-years">1940-1944</div>
+                        <p>Базовая версия с 76-мм пушкой</p>
+                        <a href="t34_76_detail.html" class="step-link">Изучить</a>
                     </div>
                 </div>
                 
-                <div class="vehicle-card">
-                    <div class="vehicle-card-image">
-                        <img src="https://images.unsplash.com/photo-1674343152902-cf4e89e1e79f?q=80&w=1470" alt="Т-44">
-                        <div class="vehicle-card-country">
-                            <i class="fas fa-flag"></i> СССР
-                        </div>
+                <div class="step-connector"></div>
+                
+                <div class="evolution-step">
+                    <div class="step-icon">
+                        <i class="fas fa-crown"></i>
                     </div>
-                    <div class="vehicle-card-content">
+                    <div class="step-content">
+                        <h3>Т-34-85</h3>
+                        <div class="step-years">1944-1958</div>
+                        <p>Усовершенствованная версия с 85-мм пушкой</p>
+                        <span class="step-link current">Текущая</span>
+                    </div>
+                </div>
+                
+                <div class="step-connector"></div>
+                
+                <div class="evolution-step">
+                    <div class="step-icon">
+                        <i class="fas fa-rocket"></i>
+                    </div>
+                    <div class="step-content">
                         <h3>Т-44</h3>
-                        <p>Послевоенная модернизация Т-34 с новой ходовой частью и усиленным бронированием.</p>
-                        <a href="#" class="vehicle-card-btn">Подробнее</a>
+                        <div class="step-years">1944-1947</div>
+                        <p>Послевоенное развитие с новой компоновкой</p>
+                        <a href="t44_detail.html" class="step-link">Изучить</a>
                     </div>
                 </div>
                 
-                <div class="vehicle-card">
-                    <div class="vehicle-card-image">
-                        <img src="https://images.unsplash.com/photo-1600054800747-fe98fce4149e?q=80&w=1472" alt="Panther">
-                        <div class="vehicle-card-country">
-                            <i class="fas fa-flag"></i> Германия
-                        </div>
+                <div class="step-connector"></div>
+                
+                <div class="evolution-step">
+                    <div class="step-icon">
+                        <i class="fas fa-chess-knight"></i>
                     </div>
-                    <div class="vehicle-card-content">
-                        <h3>Panther</h3>
-                        <p>Немецкий средний танк, один из сильнейших противников Т-34 на поле боя.</p>
-                        <a href="#" class="vehicle-card-btn">Подробнее</a>
+                    <div class="step-content">
+                        <h3>Т-54</h3>
+                        <div class="step-years">1947-1979</div>
+                        <p>Первый основной боевой танк СССР</p>
+                        <a href="t54_detail.html" class="step-link">Изучить</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Модификации Т-34-85 -->
+        <div class="modifications-section">
+            <div class="modifications-header">
+                <h2>Основные модификации Т-34-85</h2>
+                <p>Варианты и специализированные версии на базе танка</p>
+            </div>
+            
+            <div class="modifications-grid">
+                <div class="modification-card">
+                    <h3>Т-34-85 обр. 1944 г.</h3>
+                    <ul class="modification-features">
+                        <li>Башня с литой маской пушки</li>
+                        <li>Командирская башенка без зенитного пулемёта</li>
+                        <li>Пушка Д-5Т или ЗИС-С-53 ранних серий</li>
+                        <li>Механизм поворота башни с ручным приводом</li>
+                    </ul>
+                    <div class="modification-stats">
+                        <span>Годы: 1944</span>
+                        <span>Выпуск: ~8,000</span>
                     </div>
                 </div>
                 
-                <div class="vehicle-card">
-                    <div class="vehicle-card-image">
-                        <img src="https://images.unsplash.com/photo-1629444019170-ebf0f07fd5aa?q=80&w=1374" alt="Sherman">
-                        <div class="vehicle-card-country">
-                            <i class="fas fa-flag"></i> США
-                        </div>
+                <div class="modification-card">
+                    <h3>Т-34-85 обр. 1945 г.</h3>
+                    <ul class="modification-features">
+                        <li>Улучшенная командирская башенка</li>
+                        <li>Зенитный пулемёт ДШК на турели</li>
+                        <li>Электроспуск орудия и пулемётов</li>
+                        <li>Усиленная трансмиссия</li>
+                    </ul>
+                    <div class="modification-stats">
+                        <span>Годы: 1945-1946</span>
+                        <span>Выпуск: ~12,000</span>
                     </div>
-                    <div class="vehicle-card-content">
-                        <h3>M4 Sherman</h3>
-                        <p>Основной американский танк периода Второй мировой войны, поставки по ленд-лизу в СССР.</p>
-                        <a href="#" class="vehicle-card-btn">Подробнее</a>
+                </div>
+                
+                <div class="modification-card">
+                    <h3>Т-34-85 обр. 1947 г.</h3>
+                    <ul class="modification-features">
+                        <li>Новая радиостанция 10-РТ-26</li>
+                        <li>Улучшенная система очистки воздуха</li>
+                        <li>Модернизированный двигатель В-2-34М</li>
+                        <li>Изменённая конструкция жалюзи</li>
+                    </ul>
+                    <div class="modification-stats">
+                        <span>Годы: 1947-1950</span>
+                        <span>Выпуск: ~7,000</span>
+                    </div>
+                </div>
+                
+                <div class="modification-card">
+                    <h3>ОТ-34-85</h3>
+                    <ul class="modification-features">
+                        <li>Огнемётный вариант</li>
+                        <li>Заменён курсовой пулемёт на огнемёт АТО-42</li>
+                        <li>Запас огнесмеси: 200 литров</li>
+                        <li>Дальность огнеметания: 70-100 метров</li>
+                    </ul>
+                    <div class="modification-stats">
+                        <span>Годы: 1944-1945</span>
+                        <span>Выпуск: ~1,200</span>
                     </div>
                 </div>
             </div>
@@ -1113,33 +1464,33 @@
                 <div class="footer-links">
                     <h4>Коллекции</h4>
                     <ul>
-                        <li><a href="#">Танки и бронетехника</a></li>
-                        <li><a href="#">Самолёты и вертолёты</a></li>
-                        <li><a href="#">Боевые корабли и субмарины</a></li>
-                        <li><a href="#">Артиллерийские системы</a></li>
-                        <li><a href="#">Прототипы и концепты</a></li>
+                        <li><a href="tanks.html">Танки и бронетехника</a></li>
+                        <li><a href="planes.html">Самолёты и вертолёты</a></li>
+                        <li><a href="ships.html">Боевые корабли и субмарины</a></li>
+                        <li><a href="artillery.html">Артиллерийские системы</a></li>
+                        <li><a href="prototypes.html">Прототипы и концепты</a></li>
                     </ul>
                 </div>
                 
                 <div class="footer-links">
                     <h4>Исторические периоды</h4>
                     <ul>
-                        <li><a href="#">Первая мировая война</a></li>
-                        <li><a href="#">Межвоенный период</a></li>
-                        <li><a href="#">Вторая мировая война</a></li>
-                        <li><a href="#">Эпоха холодной войны</a></li>
-                        <li><a href="#">Современные конфликты</a></li>
+                        <li><a href="history.html">Первая мировая война</a></li>
+                        <li><a href="history.html">Межвоенный период</a></li>
+                        <li><a href="history.html">Вторая мировая война</a></li>
+                        <li><a href="history.html">Эпоха холодной войны</a></li>
+                        <li><a href="history.html">Современные конфликты</a></li>
                     </ul>
                 </div>
                 
                 <div class="footer-links">
                     <h4>Ресурсы</h4>
                     <ul>
-                        <li><a href="#">Военные музеи мира</a></li>
-                        <li><a href="#">Технические характеристики</a></li>
-                        <li><a href="#">Исторические документы</a></li>
-                        <li><a href="#">История разработки</a></li>
-                        <li><a href="#">Архив данных</a></li>
+                        <li><a href="museums.html">Военные музеи мира</a></li>
+                        <li><a href="specs.html">Технические характеристики</a></li>
+                        <li><a href="documents.html">Исторические документы</a></li>
+                        <li><a href="development.html">История разработки</a></li>
+                        <li><a href="archive.html">Архив данных</a></li>
                     </ul>
                 </div>
             </div>
@@ -1233,31 +1584,38 @@
                     trigger: 'axis',
                     axisPointer: {
                         type: 'shadow'
+                    },
+                    formatter: function (params) {
+                        return params[0].name + '<br/>' +
+                               params[0].seriesName + ': ' + params[0].value.toLocaleString() + ' ед.<br/>' +
+                               params[1].seriesName + ': ' + params[1].value.toLocaleString() + ' ед.';
                     }
                 },
                 legend: {
-                    data: ['Производство', 'Экспорт'],
+                    data: ['Производство в СССР', 'Экспортные поставки'],
                     textStyle: {
                         color: '#eef2f9'
-                    }
+                    },
+                    top: '0%'
                 },
                 grid: {
                     left: '3%',
                     right: '4%',
                     bottom: '3%',
-                    top: '10%',
+                    top: '15%',
                     containLabel: true
                 },
                 xAxis: {
                     type: 'category',
-                    data: ['1944', '1945', '1946-1950'],
+                    data: ['1944', '1945', '1946', '1947', '1948-1950', '1951-1958'],
                     axisLine: {
                         lineStyle: {
                             color: '#a0aec0'
                         }
                     },
                     axisLabel: {
-                        color: '#a0aec0'
+                        color: '#a0aec0',
+                        rotate: 45
                     }
                 },
                 yAxis: {
@@ -1272,7 +1630,10 @@
                         }
                     },
                     axisLabel: {
-                        color: '#a0aec0'
+                        color: '#a0aec0',
+                        formatter: function(value) {
+                            return value.toLocaleString();
+                        }
                     },
                     splitLine: {
                         lineStyle: {
@@ -1282,17 +1643,25 @@
                 },
                 series: [
                     {
-                        name: 'Производство',
+                        name: 'Производство в СССР',
                         type: 'bar',
-                        data: [10600, 14700, 7300],
+                        data: [10600, 14700, 3800, 2100, 1300, 800],
                         itemStyle: {
                             color: '#d4af37'
+                        },
+                        label: {
+                            show: true,
+                            position: 'top',
+                            color: '#eef2f9',
+                            formatter: function(params) {
+                                return params.value.toLocaleString();
+                            }
                         }
                     },
                     {
-                        name: 'Экспорт',
+                        name: 'Экспортные поставки',
                         type: 'bar',
-                        data: [0, 500, 5000],
+                        data: [0, 500, 1500, 2000, 2500, 3500],
                         itemStyle: {
                             color: '#b8972b'
                         }
@@ -1314,6 +1683,4 @@
         });
     </script>
 </body>
-
 </html>
-
