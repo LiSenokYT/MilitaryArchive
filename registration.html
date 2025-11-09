@@ -740,11 +740,6 @@
             const username = document.querySelector('input[placeholder="Введите имя пользователя"]').value;
 
             if (!email || !password || !username) {
-                console.error('❌ Fields not found:', {
-                    email: !!email,
-                    password: !!password,
-                    username: !!username
-                });
                 alert('Ошибка: не найдены поля формы');
                 return;
             }
