@@ -720,11 +720,6 @@
             });
         });
         
-        document.getElementById('registrationForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            alert('Регистрация в демо-режиме. В реальном приложении данные будут отправлены на сервер.');
-        });
-        
         document.querySelectorAll('.social-btn').forEach(btn => {
             btn.addEventListener('click', function() {
                 const provider = this.querySelector('i').className.includes('google') ? 'Google' : 'GitHub';
