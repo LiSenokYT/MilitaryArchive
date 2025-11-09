@@ -722,5 +722,29 @@
             });
         });
     </script>
+    <script type="module">
+    import { loginUser } from '/js/auth.js';
+    
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const email = document.querySelector('input[type="email"]').value;
+        const password = document.querySelector('input[type="password"]').value;
+
+        console.log('🔐 Attempting login:', email);
+
+        const result = await loginUser(email, password);
+
+        if (result.success) {
+            alert('✅ Вход выполнен!');
+            console.log('👤 User logged in:', result.user);
+            // Перенаправляем на профиль
+            window.location.href = '/pages/profile.html';
+        } else {
+            alert('❌ Ошибка входа: ' + result.error);
+            console.error('🚨 Login error:', result.error);
+        }
+    });
+</script>
 </body>
 </html>
