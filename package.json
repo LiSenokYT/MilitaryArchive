@@ -1,12 +1,15 @@
 {
   "name": "military-archive",
-  "version": "1.0.0", 
+  "version": "1.0.0",
+  "type": "module",
   "scripts": {
-    "build": "prisma generate && prisma db push"
+    "build": "prisma generate"
   },
   "dependencies": {
     "@prisma/client": "^5.7.0",
-    "prisma": "^5.7.0"
+    "prisma": "^5.7.0",
+    "bcryptjs": "^2.4.3",
+    "jsonwebtoken": "^9.0.2"
   },
   "devDependencies": {
     "@vercel/node": "^2.0.0"
