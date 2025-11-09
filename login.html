@@ -710,11 +710,6 @@
             });
         });
         
-        document.getElementById('loginForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            alert('Вход в демо-режиме. В реальном приложении будет проверка учетных данных.');
-        });
-        
         document.querySelectorAll('.social-btn').forEach(btn => {
             btn.addEventListener('click', function() {
                 const provider = this.querySelector('i').className.includes('google') ? 'Google' : 'GitHub';
@@ -728,8 +723,8 @@
     document.getElementById('loginForm').addEventListener('submit', async (e) => {
         e.preventDefault();
 
-        const email = document.querySelector('input[type="email"]').value;
-        const password = document.querySelector('input[type="password"]').value;
+        const email = document.querySelector('input[placeholder*="почту"]').value;
+        const password = document.querySelector('input[placeholder*="пароль"]').value;
 
         console.log('🔐 Attempting login:', email);
 
