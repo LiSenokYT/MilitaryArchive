@@ -1,0 +1,1297 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Архив Брони - Настройки профиля</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --dark-base: #0c0e14;
+            --dark-primary: #121726;
+            --dark-secondary: #1a1f31;
+            --accent-gold: #d4af37;
+            --accent-gold-light: #f5e1a2;
+            --text-light: #eef2f9;
+            --text-gray: #a0a9b8;
+            --transition: all 0.3s ease;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: 
+                radial-gradient(circle at top left, rgba(26, 36, 60, 0.4), transparent 70%),
+                radial-gradient(circle at bottom right, rgba(42, 52, 86, 0.3), transparent 80%),
+                var(--dark-base);
+            color: var(--text-light);
+            line-height: 1.6;
+            padding: 0;
+            margin: 0;
+            overflow-x: hidden;
+            min-height: 100vh;
+            position: relative;
+        }
+        
+        .grid-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                linear-gradient(0deg, transparent 49px, rgba(84, 97, 125, 0.1) 50px),
+                linear-gradient(90deg, transparent 49px, rgba(84, 97, 125, 0.1) 50px);
+            background-size: 50px 50px;
+            z-index: -1;
+            opacity: 0.3;
+        }
+        
+        .gold-dot {
+            position: fixed;
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(212, 175, 55, 0.2), transparent 80%);
+            z-index: -1;
+        }
+        
+        .dot-1 {
+            top: 15%;
+            left: 10%;
+        }
+        
+        .dot-2 {
+            bottom: 20%;
+            right: 8%;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+            position: relative;
+            z-index: 10;
+        }
+        
+        /* Шапка сайта */
+        header {
+            background: rgba(26, 34, 50, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+            border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .logo-icon {
+            width: 45px;
+            height: 45px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.2), transparent 80%);
+            border: 1px solid var(--accent-gold);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .logo-icon::before {
+            content: "";
+            position: absolute;
+            top: 40%;
+            left: 20%;
+            width: 15px;
+            height: 15px;
+            background: var(--accent-gold);
+            transform: rotate(45deg);
+        }
+        
+        .logo-icon::after {
+            content: "";
+            position: absolute;
+            top: 20%;
+            right: 20%;
+            width: 8px;
+            height: 8px;
+            background: var(--accent-gold);
+            transform: rotate(45deg);
+        }
+        
+        .logo h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            background: linear-gradient(to right, var(--accent-gold), var(--accent-gold-light));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin: 0;
+        }
+        
+        .main-nav ul {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+        
+        .main-nav a {
+            color: var(--text-light);
+            text-decoration: none;
+            font-weight: 500;
+            padding: 0.5rem 0;
+            position: relative;
+            transition: var(--transition);
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 1px;
+        }
+        
+        .main-nav a:hover {
+            color: var(--accent-gold);
+        }
+        
+        .main-nav a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--accent-gold);
+            transition: var(--transition);
+        }
+        
+        .main-nav a:hover::after {
+            width: 100%;
+        }
+        
+        .nav-actions {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+        
+        .icon-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            background: rgba(212, 175, 55, 0.1);
+            border-radius: 6px;
+            color: var(--accent-gold);
+            transition: var(--transition);
+            border: none;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        
+        .icon-btn:hover {
+            background: var(--accent-gold);
+            color: var(--dark-base);
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            border: none;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 1px;
+        }
+        
+        .btn-primary {
+            background: var(--accent-gold);
+            color: var(--dark-base);
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+        }
+        
+        .btn-primary:hover {
+            background: var(--accent-gold-light);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(212, 175, 55, 0.4);
+        }
+
+        /* Стили для меню пользователя */
+        .user-menu {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .user-info {
+            position: relative;
+            cursor: pointer;
+            padding: 8px 12px;
+            border-radius: 6px;
+            transition: var(--transition);
+        }
+
+        .user-info:hover {
+            background: rgba(212, 175, 55, 0.1);
+        }
+
+        .user-display-name {
+            color: var(--accent-gold);
+            font-weight: 500;
+        }
+
+        .user-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: rgba(26, 34, 50, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            border-radius: 8px;
+            padding: 0.5rem;
+            min-width: 180px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: var(--transition);
+            z-index: 1000;
+        }
+
+        .user-info:hover .user-dropdown {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            color: var(--text-light);
+            text-decoration: none;
+            border-radius: 6px;
+            transition: var(--transition);
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+            font-size: 0.9rem;
+        }
+
+        .dropdown-item:hover {
+            background: rgba(212, 175, 55, 0.1);
+            color: var(--accent-gold);
+        }
+
+        .logout-btn {
+            border-top: 1px solid rgba(212, 175, 55, 0.1) !important;
+            margin-top: 5px;
+            padding-top: 12px !important;
+        }
+
+        /* Основной контент настроек */
+        .settings-section {
+            padding: 3rem 0;
+        }
+
+        .settings-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .settings-header h1 {
+            font-size: 2.5rem;
+            color: var(--accent-gold);
+            margin-bottom: 1rem;
+        }
+
+        .settings-header p {
+            color: var(--text-gray);
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .settings-layout {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Боковая навигация */
+        .settings-nav {
+            background: rgba(26, 34, 50, 0.8);
+            border-radius: 15px;
+            padding: 2rem;
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            height: fit-content;
+            position: sticky;
+            top: 100px;
+        }
+
+        .nav-category {
+            margin-bottom: 2rem;
+        }
+
+        .nav-category:last-child {
+            margin-bottom: 0;
+        }
+
+        .nav-category h3 {
+            color: var(--accent-gold);
+            font-size: 1rem;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 15px;
+            color: var(--text-light);
+            text-decoration: none;
+            border-radius: 8px;
+            transition: var(--transition);
+            margin-bottom: 5px;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+            font-size: 0.95rem;
+        }
+
+        .nav-item:hover {
+            background: rgba(212, 175, 55, 0.1);
+            color: var(--accent-gold);
+        }
+
+        .nav-item.active {
+            background: rgba(212, 175, 55, 0.15);
+            color: var(--accent-gold);
+            border-left: 3px solid var(--accent-gold);
+        }
+
+        .nav-item i {
+            width: 20px;
+            text-align: center;
+        }
+
+        /* Основной контент */
+        .settings-content {
+            background: rgba(26, 34, 50, 0.8);
+            border-radius: 15px;
+            padding: 2rem;
+            border: 1px solid rgba(212, 175, 55, 0.2);
+        }
+
+        .content-section {
+            margin-bottom: 3rem;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.1);
+        }
+
+        .content-section:last-child {
+            margin-bottom: 0;
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 2rem;
+        }
+
+        .section-icon {
+            width: 50px;
+            height: 50px;
+            background: rgba(212, 175, 55, 0.1);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--accent-gold);
+            font-size: 1.5rem;
+        }
+
+        .section-title {
+            color: var(--accent-gold);
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .section-description {
+            color: var(--text-gray);
+            font-size: 0.95rem;
+        }
+
+        /* Формы */
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--accent-gold-light);
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 15px;
+            background: rgba(12, 15, 22, 0.7);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 8px;
+            color: var(--text-light);
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--accent-gold);
+            box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.2);
+        }
+
+        .form-input::placeholder {
+            color: var(--text-gray);
+        }
+
+        .form-textarea {
+            min-height: 120px;
+            resize: vertical;
+            font-family: inherit;
+        }
+
+        .form-help {
+            color: var(--text-gray);
+            font-size: 0.85rem;
+            margin-top: 0.5rem;
+        }
+
+        /* Аватар */
+        .avatar-section {
+            display: flex;
+            align-items: flex-start;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .avatar-preview {
+            position: relative;
+            width: 120px;
+            height: 120px;
+        }
+
+        .avatar-image {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent-gold), var(--accent-gold-light));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: var(--dark-base);
+            font-weight: bold;
+            overflow: hidden;
+        }
+
+        .avatar-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+
+        .avatar-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: var(--transition);
+            cursor: pointer;
+        }
+
+        .avatar-preview:hover .avatar-overlay {
+            opacity: 1;
+        }
+
+        .avatar-actions {
+            flex: 1;
+        }
+
+        .avatar-actions .btn {
+            margin-right: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        /* Переключатели */
+        .switch-group {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem 0;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.1);
+        }
+
+        .switch-label {
+            flex: 1;
+        }
+
+        .switch-title {
+            color: var(--text-light);
+            font-weight: 500;
+            margin-bottom: 0.3rem;
+        }
+
+        .switch-description {
+            color: var(--text-gray);
+            font-size: 0.9rem;
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(255, 255, 255, 0.1);
+            transition: var(--transition);
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: var(--text-light);
+            transition: var(--transition);
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: var(--accent-gold);
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+
+        /* Опасная зона */
+        .danger-zone {
+            background: rgba(220, 38, 38, 0.1);
+            border: 1px solid rgba(220, 38, 38, 0.3);
+            border-radius: 10px;
+            padding: 2rem;
+            margin-top: 2rem;
+        }
+
+        .danger-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 1.5rem;
+        }
+
+        .danger-icon {
+            color: #dc2626;
+            font-size: 1.5rem;
+        }
+
+        .danger-title {
+            color: #dc2626;
+            font-size: 1.3rem;
+        }
+
+        .danger-description {
+            color: var(--text-gray);
+            margin-bottom: 1.5rem;
+            line-height: 1.5;
+        }
+
+        .btn-danger {
+            background: #dc2626;
+            color: white;
+            border: none;
+        }
+
+        .btn-danger:hover {
+            background: #b91c1c;
+        }
+
+        /* Кнопки действий */
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(212, 175, 55, 0.1);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--accent-gold);
+            border: 1px solid var(--accent-gold);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(212, 175, 55, 0.1);
+        }
+
+        /* Подвал сайта */
+        footer {
+            background: rgba(12, 15, 22, 0.95);
+            padding: 4rem 0 2rem;
+            margin-top: 4rem;
+            border-top: 1px solid rgba(212, 175, 55, 0.1);
+        }
+        
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 3rem;
+            margin-bottom: 3rem;
+        }
+        
+        .footer-logo {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+        
+        .footer-logo h3 {
+            color: var(--accent-gold);
+            font-size: 1.8rem;
+        }
+        
+        .footer-logo p {
+            color: var(--text-gray);
+        }
+        
+        .social-links {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        
+        .social-links a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background: rgba(212, 175, 55, 0.1);
+            border-radius: 50%;
+            color: var(--accent-gold);
+            transition: var(--transition);
+            text-decoration: none;
+        }
+        
+        .social-links a:hover {
+            background: var(--accent-gold);
+            color: var(--dark-base);
+            transform: translateY(-3px);
+        }
+        
+        .footer-links h4 {
+            color: var(--accent-gold);
+            margin-bottom: 1.5rem;
+            font-size: 1.1rem;
+        }
+        
+        .footer-links ul {
+            list-style: none;
+        }
+        
+        .footer-links li {
+            margin-bottom: 0.8rem;
+        }
+        
+        .footer-links a {
+            color: var(--text-gray);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+        
+        .footer-links a:hover {
+            color: var(--accent-gold);
+        }
+        
+        .copyright {
+            text-align: center;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            color: var(--text-gray);
+            font-size: 0.9rem;
+        }
+        
+        .brand-info {
+            text-align: center;
+            color: var(--accent-gold);
+            letter-spacing: 1px;
+            font-size: 1.2rem;
+            font-weight: 300;
+            margin-top: 5px;
+            opacity: 0.8;
+        }
+
+        /* Адаптивные стили */
+        @media (max-width: 1024px) {
+            .settings-layout {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+            
+            .settings-nav {
+                position: static;
+                order: 2;
+            }
+            
+            .settings-content {
+                order: 1;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 1.2rem;
+            }
+            
+            .main-nav ul {
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 0.8rem;
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .avatar-section {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .avatar-preview {
+                margin: 0 auto;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .settings-header h1 {
+                font-size: 2rem;
+            }
+            
+            .section-header {
+                flex-direction: column;
+                text-align: center;
+                gap: 1rem;
+            }
+            
+            .settings-nav, .settings-content {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Декоративные элементы -->
+    <div class="grid-overlay"></div>
+    <div class="gold-dot dot-1"></div>
+    <div class="gold-dot dot-2"></div>
+    
+    <!-- Шапка сайта -->
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <div class="logo-icon"></div>
+                    <h1>Архив Брони</h1>
+                </div>
+                <nav class="main-nav">
+                    <ul>
+                        <li><a href="/index.html">Главная</a></li>
+                        <li><a href="/tanks.html">Танки</a></li>
+                        <li><a href="/planes.html">Самолёты</a></li>
+                        <li><a href="/ships.html">Корабли</a></li>
+                        <li><a href="/artillery.html">Артиллерия</a></li>
+                        <li><a href="/history.html">Исторические периоды</a></li>
+                    </ul>
+                </nav>
+                <div class="nav-actions">
+                    <!-- Навигация обновится автоматически через navigation.js -->
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Настройки профиля -->
+    <section class="settings-section">
+        <div class="container">
+            <div class="settings-header">
+                <h1>Настройки профиля</h1>
+                <p>Управляйте вашей учетной записью и настройками приватности</p>
+            </div>
+            
+            <div class="settings-layout">
+                <!-- Боковая навигация -->
+                <nav class="settings-nav">
+                    <div class="nav-category">
+                        <h3><i class="fas fa-user-cog"></i> Учетная запись</h3>
+                        <button class="nav-item active" data-section="profile">
+                            <i class="fas fa-user"></i> Основная информация
+                        </button>
+                        <button class="nav-item" data-section="security">
+                            <i class="fas fa-shield-alt"></i> Безопасность
+                        </button>
+                    </div>
+                    
+                    <div class="nav-category">
+                        <h3><i class="fas fa-eye"></i> Приватность</h3>
+                        <button class="nav-item" data-section="privacy">
+                            <i class="fas fa-lock"></i> Настройки приватности
+                        </button>
+                        <button class="nav-item" data-section="notifications">
+                            <i class="fas fa-bell"></i> Уведомления
+                        </button>
+                    </div>
+                    
+                    <div class="nav-category">
+                        <h3><i class="fas fa-exclamation-triangle"></i> Система</h3>
+                        <button class="nav-item" data-section="danger">
+                            <i class="fas fa-skull-crossbones"></i> Опасная зона
+                        </button>
+                    </div>
+                </nav>
+                
+                <!-- Основной контент -->
+                <main class="settings-content">
+                    <!-- Секция: Основная информация -->
+                    <div class="content-section" id="profile-section">
+                        <div class="section-header">
+                            <div class="section-icon">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <div>
+                                <h2 class="section-title">Основная информация</h2>
+                                <p class="section-description">Управляйте вашими основными данными и настройками профиля</p>
+                            </div>
+                        </div>
+                        
+                        <!-- Подсекция: Аватар и идентификация -->
+                        <div class="content-subsection">
+                            <h3 style="color: var(--accent-gold-light); margin-bottom: 1.5rem; font-size: 1.2rem;">
+                                <i class="fas fa-id-card"></i> Аватар и идентификация
+                            </h3>
+                            
+                            <div class="avatar-section">
+                                <div class="avatar-preview">
+                                    <div class="avatar-image" id="avatarPreview">
+                                        ИИ
+                                    </div>
+                                    <div class="avatar-overlay">
+                                        <i class="fas fa-camera"></i>
+                                    </div>
+                                </div>
+                                <div class="avatar-actions">
+                                    <button class="btn btn-primary">
+                                        <i class="fas fa-upload"></i> Загрузить фото
+                                    </button>
+                                    <button class="btn btn-secondary">
+                                        <i class="fas fa-sync-alt"></i> Сгенерировать аватар
+                                    </button>
+                                    <p class="form-help">Рекомендуемый размер: 400×400 пикселей. Поддерживаются JPG, PNG.</p>
+                                </div>
+                            </div>
+                            
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label class="form-label">Имя пользователя *</label>
+                                    <input type="text" class="form-input" placeholder="Введите имя пользователя" value="ivan_ivanov">
+                                    <p class="form-help">Уникальное имя для вашего профиля. Можно использовать буквы, цифры и подчеркивания.</p>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label class="form-label">Полное имя</label>
+                                    <input type="text" class="form-input" placeholder="Введите ваше полное имя" value="Иван Иванов">
+                                    <p class="form-help">Ваше настоящее имя (необязательно)</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Подсекция: Контактная информация -->
+                        <div class="content-subsection" style="margin-top: 2rem;">
+                            <h3 style="color: var(--accent-gold-light); margin-bottom: 1.5rem; font-size: 1.2rem;">
+                                <i class="fas fa-address-book"></i> Контактная информация
+                            </h3>
+                            
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label class="form-label">Электронная почта *</label>
+                                    <input type="email" class="form-input" placeholder="your@email.com" value="ivan@example.com">
+                                    <p class="form-help">
+                                        <i class="fas fa-check-circle" style="color: #10b981;"></i> 
+                                        Почта подтверждена
+                                    </p>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label class="form-label">Веб-сайт</label>
+                                    <input type="url" class="form-input" placeholder="https://example.com">
+                                    <p class="form-help">Ссылка на ваш сайт или социальную сеть</p>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label class="form-label">Местоположение</label>
+                                    <input type="text" class="form-input" placeholder="Город, страна">
+                                    <p class="form-help">Ваше текущее местоположение</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Подсекция: О себе -->
+                        <div class="content-subsection" style="margin-top: 2rem;">
+                            <h3 style="color: var(--accent-gold-light); margin-bottom: 1.5rem; font-size: 1.2rem;">
+                                <i class="fas fa-edit"></i> О себе
+                            </h3>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Биография</label>
+                                <textarea class="form-input form-textarea" placeholder="Расскажите о себе, ваших интересах в военной технике...">Участник сообщества с 2023 года. Специализация: советская бронетехника Второй мировой войны. Интересуюсь историей развития танкостроения и авиации.</textarea>
+                                <p class="form-help">Максимум 500 символов. <span id="bioCounter">125/500</span></p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Секция: Безопасность -->
+                    <div class="content-section" id="security-section" style="display: none;">
+                        <div class="section-header">
+                            <div class="section-icon">
+                                <i class="fas fa-shield-alt"></i>
+                            </div>
+                            <div>
+                                <h2 class="section-title">Безопасность</h2>
+                                <p class="section-description">Управление паролем и настройками безопасности</p>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Текущий пароль</label>
+                            <input type="password" class="form-input" placeholder="Введите текущий пароль">
+                        </div>
+                        
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label class="form-label">Новый пароль</label>
+                                <input type="password" class="form-input" placeholder="Введите новый пароль">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Подтвердите пароль</label>
+                                <input type="password" class="form-input" placeholder="Повторите новый пароль">
+                            </div>
+                        </div>
+                        
+                        <p class="form-help">Пароль должен содержать не менее 8 символов, включая цифры и специальные знаки.</p>
+                        
+                        <div class="action-buttons">
+                            <button class="btn btn-secondary">Отмена</button>
+                            <button class="btn btn-primary">Сменить пароль</button>
+                        </div>
+                    </div>
+                    
+                    <!-- Секция: Приватность -->
+                    <div class="content-section" id="privacy-section" style="display: none;">
+                        <div class="section-header">
+                            <div class="section-icon">
+                                <i class="fas fa-lock"></i>
+                            </div>
+                            <div>
+                                <h2 class="section-title">Настройки приватности</h2>
+                                <p class="section-description">Контролируйте, кто может видеть вашу информацию</p>
+                            </div>
+                        </div>
+                        
+                        <div class="switch-group">
+                            <div class="switch-label">
+                                <div class="switch-title">Публичный профиль</div>
+                                <div class="switch-description">Разрешить другим пользователям просматривать ваш профиль</div>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        
+                        <div class="switch-group">
+                            <div class="switch-label">
+                                <div class="switch-title">Показывать email</div>
+                                <div class="switch-description">Разрешить показывать ваш email в профиле</div>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        
+                        <div class="switch-group">
+                            <div class="switch-label">
+                                <div class="switch-title">Принимать личные сообщения</div>
+                                <div class="switch-description">Разрешить другим пользователям отправлять вам сообщения</div>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <!-- Секция: Опасная зона -->
+                    <div class="content-section" id="danger-section" style="display: none;">
+                        <div class="section-header">
+                            <div class="section-icon">
+                                <i class="fas fa-skull-crossbones"></i>
+                            </div>
+                            <div>
+                                <h2 class="section-title">Опасная зона</h2>
+                                <p class="section-description">Действия, которые нельзя отменить</p>
+                            </div>
+                        </div>
+                        
+                        <div class="danger-zone">
+                            <div class="danger-header">
+                                <i class="fas fa-exclamation-triangle danger-icon"></i>
+                                <h3 class="danger-title">Удаление аккаунта</h3>
+                            </div>
+                            <p class="danger-description">
+                                После удаления аккаунта все ваши данные будут безвозвратно удалены. 
+                                Это действие нельзя отменить. Пожалуйста, убедитесь в своем решении.
+                            </p>
+                            <button class="btn btn-danger">
+                                <i class="fas fa-trash"></i> Удалить мой аккаунт
+                            </button>
+                        </div>
+                        
+                        <div class="danger-zone" style="margin-top: 2rem; background: rgba(59, 130, 246, 0.1); border-color: rgba(59, 130, 246, 0.3);">
+                            <div class="danger-header">
+                                <i class="fas fa-download danger-icon" style="color: #3b82f6;"></i>
+                                <h3 class="danger-title" style="color: #3b82f6;">Экспорт данных</h3>
+                            </div>
+                            <p class="danger-description">
+                                Загрузите копию всех ваших данных с нашего сайта. 
+                                Файл будет содержать информацию о вашем профиле, закладках и активности.
+                            </p>
+                            <button class="btn" style="background: #3b82f6; color: white;">
+                                <i class="fas fa-file-export"></i> Экспортировать мои данные
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Кнопки сохранения -->
+                    <div class="action-buttons">
+                        <button class="btn btn-secondary">
+                            <i class="fas fa-times"></i> Отмена
+                        </button>
+                        <button class="btn btn-primary">
+                            <i class="fas fa-save"></i> Сохранить изменения
+                        </button>
+                    </div>
+                </main>
+            </div>
+        </div>
+    </section>
+
+    <!-- Подвал сайта -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <h3>Архив Брони</h3>
+                    <p>Комплексная энциклопедия военной техники с XX века до наших дней.</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+                
+                <div class="footer-links">
+                    <h4>Коллекции</h4>
+                    <ul>
+                        <li><a href="/tanks.html">Танки и бронетехника</a></li>
+                        <li><a href="/planes.html">Самолёты и вертолёты</a></li>
+                        <li><a href="/ships.html">Боевые корабли и субмарины</a></li>
+                        <li><a href="/artillery.html">Артиллерийские системы</a></li>
+                        <li><a href="/prototypes.html">Прототипы и концепты</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-links">
+                    <h4>Исторические периоды</h4>
+                    <ul>
+                        <li><a href="/history.html">Первая мировая война</a></li>
+                        <li><a href="/history.html">Межвоенный период</a></li>
+                        <li><a href="/history.html">Вторая мировая война</a></li>
+                        <li><a href="/history.html">Эпоха холодной войны</a></li>
+                        <li><a href="/history.html">Современные конфликты</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-links">
+                    <h4>Ресурсы</h4>
+                    <ul>
+                        <li><a href="/museums.html">Военные музеи мира</a></li>
+                        <li><a href="/specs.html">Технические характеристики</a></li>
+                        <li><a href="/documents.html">Исторические документы</a></li>
+                        <li><a href="/development.html">История разработки</a></li>
+                        <li><a href="/archive.html">Архив данных</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="copyright">
+                <p>&copy; 2025 Архив Брони. Сайт предназначен для образовательных и исторических целей.</p>
+                <p class="brand-info">Сохраняя военную историю через технологии</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Подключение скриптов -->
+    <script type="module" src="/js/supabase.js"></script>
+    <script type="module" src="/js/navigation.js"></script>
+    
+    <script>
+        // Навигация между разделами настроек
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', function() {
+                // Убираем активный класс у всех элементов
+                document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
+                // Скрываем все секции
+                document.querySelectorAll('.content-section').forEach(section => section.style.display = 'none');
+                
+                // Добавляем активный класс текущему элементу
+                this.classList.add('active');
+                
+                // Показываем соответствующую секцию
+                const sectionId = this.getAttribute('data-section') + '-section';
+                document.getElementById(sectionId).style.display = 'block';
+            });
+        });
+
+        // Подсчет символов в bio
+        const bioTextarea = document.querySelector('.form-textarea');
+        const bioCounter = document.getElementById('bioCounter');
+        
+        if (bioTextarea && bioCounter) {
+            bioTextarea.addEventListener('input', function() {
+                const length = this.value.length;
+                bioCounter.textContent = `${length}/500`;
+                
+                if (length > 500) {
+                    bioCounter.style.color = '#dc2626';
+                } else {
+                    bioCounter.style.color = 'var(--text-gray)';
+                }
+            });
+        }
+
+        // Загрузка аватара
+        document.querySelector('.avatar-overlay').addEventListener('click', function() {
+            alert('Функция загрузки аватара будет реализована в следующем обновлении');
+        });
+
+        // Генерация аватара
+        document.querySelector('.avatar-actions .btn-secondary').addEventListener('click', function() {
+            const avatar = document.getElementById('avatarPreview');
+            const colors = ['#d4af37', '#3b82f6', '#10b981', '#8b5cf6', '#ef4444'];
+            const randomColor = colors[Math.floor(Math.random() * colors.length)];
+            avatar.style.background = `linear-gradient(135deg, ${randomColor}, ${randomColor}80)`;
+        });
+
+        // Сохранение настроек
+        document.querySelector('.action-buttons .btn-primary').addEventListener('click', function() {
+            alert('Настройки успешно сохранены!');
+        });
+
+        // Удаление аккаунта
+        document.querySelector('.btn-danger').addEventListener('click', function() {
+            if (confirm('Вы уверены, что хотите удалить свой аккаунт? Это действие нельзя отменить.')) {
+                alert('Функция удаления аккаунта будет реализована в следующем обновлении');
+            }
+        });
+
+        // Экспорт данных
+        document.querySelector('[style*="background: #3b82f6"]').addEventListener('click', function() {
+            alert('Запрос на экспорт данных отправлен. Файл будет готов в течение 24 часов.');
+        });
+    </script>
+</body>
+</html>
