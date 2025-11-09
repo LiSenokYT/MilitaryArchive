@@ -38,7 +38,6 @@
             position: relative;
         }
         
-        /* Декоративные элементы */
         .grid-overlay {
             position: fixed;
             top: 0;
@@ -80,7 +79,6 @@
             z-index: 10;
         }
         
-        /* Стили шапки */
         header {
             background: rgba(26, 34, 50, 0.95);
             backdrop-filter: blur(10px);
@@ -200,8 +198,8 @@
             border-radius: 6px;
             color: var(--accent-gold);
             transition: var(--transition);
-            cursor: pointer;
             text-decoration: none;
+            cursor: pointer;
         }
         
         .icon-btn:hover {
@@ -233,7 +231,6 @@
             box-shadow: 0 6px 20px rgba(212, 175, 55, 0.4);
         }
         
-        /* Главный баннер */
         .hero {
             min-height: 500px;
             display: flex;
@@ -287,7 +284,6 @@
             background: rgba(212, 175, 55, 0.1);
         }
         
-        /* Инструменты сортировки */
         .sorting-tools {
             background: rgba(26, 34, 50, 0.7);
             margin: 3rem auto;
@@ -387,7 +383,6 @@
             font-size: 0.85rem;
         }
         
-        /* Галерея техники */
         .showcase {
             margin: 3rem 0 5rem;
             position: relative;
@@ -535,7 +530,6 @@
             background: rgba(212, 175, 55, 0.1);
         }
         
-        /* Подвал сайта */
         footer {
             background: rgba(12, 15, 22, 0.95);
             padding: 4rem 0 2rem;
@@ -581,6 +575,7 @@
             border-radius: 50%;
             color: var(--accent-gold);
             transition: var(--transition);
+            text-decoration: none;
         }
         
         .social-links a:hover {
@@ -631,7 +626,6 @@
             opacity: 0.8;
         }
         
-        /* Адаптивные стили */
         @media (max-width: 1024px) {
             .hero h2 {
                 font-size: 2.5rem;
@@ -685,12 +679,10 @@
     </style>
 </head>
 <body>
-    <!-- Декоративные элементы -->
     <div class="grid-overlay"></div>
     <div class="gold-dot dot-1"></div>
     <div class="gold-dot dot-2"></div>
     
-    <!-- Шапка сайта -->
     <header>
         <div class="container">
             <div class="header-content">
@@ -712,15 +704,14 @@
                     <button class="icon-btn">
                         <i class="fas fa-bookmark"></i>
                     </button>
-                    <a href="login.html" class="icon-btn">
+                    <a href="registration.html" class="icon-btn">
                         <i class="fas fa-user"></i>
-                    </button>
+                    </a>
                 </div>
             </div>
         </div>
     </header>
 
-    <!-- Главный баннер -->
     <section class="hero">
         <div class="container">
             <div class="hero-content">
@@ -734,7 +725,6 @@
         </div>
     </section>
 
-    <!-- Инструменты сортировки -->
     <section class="sorting-tools">
         <div class="tools-header">
             <h3><i class="fas fa-sort"></i> Фильтрация и сортировка техники</h3>
@@ -813,7 +803,6 @@
         </div>
     </section>
 
-    <!-- Галерея техники -->
     <section class="showcase">
         <div class="container">
             <div class="section-title">
@@ -951,7 +940,6 @@
         </div>
     </section>
 
-    <!-- Подвал сайта -->
     <footer>
         <div class="container">
             <div class="footer-content">
@@ -1008,7 +996,6 @@
     </footer>
 
     <script>
-        // Обработка кнопок "Подробнее"
         document.querySelectorAll('.card-btn').forEach(btn => {
             btn.addEventListener('click', function() {
                 const equipmentName = this.closest('.equipment-card').querySelector('h3').textContent;
@@ -1016,7 +1003,6 @@
             });
         });
         
-        // Обработка кнопок в герое
         document.querySelector('.hero-buttons .btn-primary').addEventListener('click', function() {
             alert('Переход к экспонатам. В реальном приложении будет навигация к разделу с техникой.');
         });
@@ -1025,7 +1011,6 @@
             alert('Переход к историческим периодам. В реальном приложении будет навигация к хронологии.');
         });
         
-        // Обработка поиска
         document.querySelector('.search-bar').addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
                 alert(`Поиск: "${this.value}". В реальном приложении будет выполнен поиск по каталогу.`);
@@ -1034,7 +1019,3 @@
     </script>
 </body>
 </html>
-
-
-
-
