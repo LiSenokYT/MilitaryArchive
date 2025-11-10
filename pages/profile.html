@@ -1068,9 +1068,11 @@
     <script type="module">
         import { supabase } from '/js/supabase.js'
 
-        // Функция для гарантии существования профиля
+        // Функция для гарантии существования профиля с обработкой RLS
         async function ensureProfileExists(user) {
             try {
+                console.log('🔄 Ensuring profile exists for user:', user.id);
+                
                 // Сначала проверяем существует ли профиль
                 const { data: profile, error: fetchError } = await supabase
                     .from('profiles')
@@ -1078,11 +1080,13 @@
                     .eq('id', user.id)
                     .single();
 
-                if (fetchError && fetchError.code === 'PGRST116') { // Profile not found
-                    console.log('🔄 Profile not found, creating...');
+                if (fetchError && fetchError.code === 'PGRST116') { 
+                    // Profile not found - создаем новый профиль
+                    console.log('📝 Profile not found, creating new one...');
                     
                     const username = user.user_metadata?.username || user.email.split('@')[0];
                     
+                    // Создаем профиль с использованием RLS-совместимого подхода
                     const { data: newProfile, error: createError } = await supabase
                         .from('profiles')
                         .insert({
@@ -1097,21 +1101,79 @@
 
                     if (createError) {
                         console.error('❌ Failed to create profile:', createError);
+                        
+                        // Если ошибка RLS, пробуем альтернативный метод
+                        if (createError.code === '42501' || createError.message.includes('row-level security')) {
+                            console.log('🛠 Trying alternative profile creation method...');
+                            return await createProfileAlternative(user);
+                        }
                         throw createError;
                     }
                     
-                    console.log('✅ Profile created:', newProfile);
+                    console.log('✅ Profile created successfully:', newProfile);
                     return { success: true, profile: newProfile };
+                    
                 } else if (fetchError) {
+                    console.error('❌ Error fetching profile:', fetchError);
                     throw fetchError;
                 }
                 
-                console.log('✅ Profile exists:', profile);
+                console.log('✅ Profile already exists:', profile);
                 return { success: true, profile: profile };
                 
             } catch (error) {
                 console.error('❌ Error ensuring profile exists:', error);
                 return { success: false, error: error.message };
+            }
+        }
+
+        // Альтернативный метод создания профиля через auth функции
+        async function createProfileAlternative(user) {
+            try {
+                console.log('🔧 Using alternative profile creation method...');
+                
+                const username = user.user_metadata?.username || user.email.split('@')[0];
+                
+                // Обновляем метаданные пользователя через auth
+                const { error: updateError } = await supabase.auth.updateUser({
+                    data: { 
+                        username: username,
+                        profile_created: true 
+                    }
+                });
+
+                if (updateError) {
+                    console.error('❌ Failed to update user metadata:', updateError);
+                    throw updateError;
+                }
+
+                // Ждем немного и проверяем снова
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                
+                // Пробуем создать профиль еще раз
+                const { data: profile, error: retryError } = await supabase
+                    .from('profiles')
+                    .insert({
+                        id: user.id,
+                        username: username,
+                        email: user.email,
+                        created_at: new Date().toISOString(),
+                        updated_at: new Date().toISOString()
+                    })
+                    .select()
+                    .single();
+
+                if (retryError) {
+                    console.error('❌ Retry also failed:', retryError);
+                    throw retryError;
+                }
+
+                console.log('✅ Profile created via alternative method:', profile);
+                return { success: true, profile: profile };
+                
+            } catch (error) {
+                console.error('❌ Alternative method failed:', error);
+                throw error;
             }
         }
 
@@ -1123,31 +1185,45 @@
             }
 
             async init() {
-                await this.checkAuth()
-                await this.loadUserProfile()
-                this.setupEventListeners()
-                this.updateProfileUI()
+                try {
+                    await this.checkAuth()
+                    await this.loadUserProfile()
+                    this.setupEventListeners()
+                    this.updateProfileUI()
+                } catch (error) {
+                    console.error('❌ Profile manager init error:', error)
+                    this.showNotification('Ошибка инициализации профиля', 'error')
+                }
             }
 
             async checkAuth() {
                 const { data: { user }, error } = await supabase.auth.getUser()
                 
                 if (error || !user) {
+                    console.log('🔐 No authenticated user, redirecting to login...')
                     window.location.href = '/login.html'
                     return
                 }
                 
                 this.currentUser = user
+                console.log('✅ User authenticated:', user.email)
                 
                 // Гарантируем что профиль существует
                 const profileResult = await ensureProfileExists(user)
                 if (!profileResult.success) {
                     console.error('❌ Failed to ensure profile exists:', profileResult.error)
+                    this.showNotification('Проблема с созданием профиля', 'error')
+                } else {
+                    console.log('✅ Profile ensured:', profileResult.profile)
                 }
             }
 
             async loadUserProfile() {
                 try {
+                    if (!this.currentUser) {
+                        throw new Error('No authenticated user')
+                    }
+
                     console.log('👤 Loading profile for user:', this.currentUser.id)
                     
                     const { data: profile, error } = await supabase
@@ -1158,6 +1234,17 @@
 
                     if (error) {
                         console.error('❌ Profile load error:', error)
+                        
+                        if (error.code === 'PGRST116') {
+                            // Profile not found - создаем его
+                            console.log('🔄 Profile not found during load, creating...')
+                            const createResult = await ensureProfileExists(this.currentUser)
+                            if (createResult.success) {
+                                this.userProfile = createResult.profile
+                                console.log('✅ Profile created and loaded:', this.userProfile)
+                                return
+                            }
+                        }
                         throw error
                     }
 
@@ -1206,43 +1293,65 @@
 
             updateProfileUI() {
                 if (!this.userProfile) {
-                    console.log('⚠️ No profile data available');
-                    return
+                    console.log('⚠️ No profile data available, using fallback');
+                    this.showFallbackUI();
+                    return;
                 }
 
-                console.log('🎨 Updating UI with profile:', this.userProfile)
+                console.log('🎨 Updating UI with profile:', this.userProfile);
 
                 // Основная информация
-                document.getElementById('userName').textContent = this.userProfile.username || this.currentUser.email
-                document.getElementById('userRank').textContent = this.getUserRank()
-                document.getElementById('userBio').textContent = this.userProfile.bio || 'Пользователь не добавил информацию о себе.'
+                document.getElementById('userName').textContent = this.userProfile.username || this.currentUser.email;
+                document.getElementById('userRank').textContent = this.getUserRank();
+                document.getElementById('userBio').textContent = this.userProfile.bio || 'Пользователь не добавил информацию о себе.';
                 
                 // Аватар
-                this.updateAvatarPreview()
+                this.updateAvatarPreview();
                 
                 // Мета-информация
-                this.updateUserMeta()
+                this.updateUserMeta();
                 
                 // Статистика
-                document.getElementById('statBookmarks').textContent = this.userProfile.bookmarks_count || '0'
-                document.getElementById('statViews').textContent = this.userProfile.views_count || '0'
-                document.getElementById('statComments').textContent = this.userProfile.comments_count || '0'
-                document.getElementById('statDays').textContent = Math.floor((new Date() - new Date(this.currentUser.created_at)) / (1000 * 60 * 60 * 24))
+                document.getElementById('statBookmarks').textContent = this.userProfile.bookmarks_count || '0';
+                document.getElementById('statViews').textContent = this.userProfile.views_count || '0';
+                document.getElementById('statComments').textContent = this.userProfile.comments_count || '0';
+                
+                const joinDate = this.userProfile.created_at || this.currentUser.created_at;
+                document.getElementById('statDays').textContent = Math.floor((new Date() - new Date(joinDate)) / (1000 * 60 * 60 * 24));
                 
                 // Загружаем демо-данные для вкладок
-                this.loadDemoData()
+                this.loadDemoData();
+            }
+
+            showFallbackUI() {
+                document.getElementById('userName').textContent = this.currentUser?.email || 'Пользователь';
+                document.getElementById('userRank').textContent = 'Новичок';
+                document.getElementById('userBio').textContent = 'Загрузка данных профиля...';
+                
+                // Показываем базовую информацию из auth
+                const metaContainer = document.getElementById('userMeta');
+                if (metaContainer && this.currentUser) {
+                    metaContainer.innerHTML = `
+                        <div class="meta-item">
+                            <i class="fas fa-calendar"></i>
+                            <span>Участник с ${new Date(this.currentUser.created_at).getFullYear()} года</span>
+                        </div>
+                    `;
+                }
+                
+                this.loadDemoData();
             }
 
             updateAvatarPreview() {
-                const avatarPreview = document.getElementById('userAvatar')
+                const avatarPreview = document.getElementById('userAvatar');
                 
                 if (this.userProfile.avatar_url) {
-                    avatarPreview.innerHTML = `<img src="${this.userProfile.avatar_url}" alt="Аватар" onerror="this.style.display='none'">`
+                    avatarPreview.innerHTML = `<img src="${this.userProfile.avatar_url}" alt="Аватар" onerror="this.style.display='none'">`;
                 } else {
-                    const username = this.userProfile.username || this.currentUser.email
-                    const initials = username.substring(0, 2).toUpperCase()
-                    avatarPreview.innerHTML = initials
-                    avatarPreview.style.background = this.getAvatarColor(username)
+                    const username = this.userProfile.username || this.currentUser.email;
+                    const initials = username.substring(0, 2).toUpperCase();
+                    avatarPreview.innerHTML = initials;
+                    avatarPreview.style.background = this.getAvatarColor(username);
                 }
             }
 
@@ -1254,32 +1363,32 @@
                     'linear-gradient(135deg, #8b5cf6, #a78bfa)',
                     'linear-gradient(135deg, #ef4444, #f87171)',
                     'linear-gradient(135deg, #f59e0b, #fbbf24)'
-                ]
+                ];
                 
-                let hash = 0
+                let hash = 0;
                 for (let i = 0; i < username.length; i++) {
-                    hash = username.charCodeAt(i) + ((hash << 5) - hash)
+                    hash = username.charCodeAt(i) + ((hash << 5) - hash);
                 }
-                const index = Math.abs(hash) % colors.length
-                return colors[index]
+                const index = Math.abs(hash) % colors.length;
+                return colors[index];
             }
 
             getUserRank() {
-                if (!this.userProfile.created_at) return 'Новичок'
+                if (!this.userProfile.created_at) return 'Новичок';
                 
-                const joinDate = new Date(this.userProfile.created_at)
-                const monthsSinceJoin = (new Date() - joinDate) / (1000 * 60 * 60 * 24 * 30)
+                const joinDate = new Date(this.userProfile.created_at);
+                const monthsSinceJoin = (new Date() - joinDate) / (1000 * 60 * 60 * 24 * 30);
                 
-                if (monthsSinceJoin > 24) return 'Ветеран сообщества'
-                if (monthsSinceJoin > 12) return 'Опытный исследователь'
-                if (monthsSinceJoin > 6) return 'Активный участник'
-                if (monthsSinceJoin > 3) return 'Любитель техники'
-                return 'Новичок'
+                if (monthsSinceJoin > 24) return 'Ветеран сообщества';
+                if (monthsSinceJoin > 12) return 'Опытный исследователь';
+                if (monthsSinceJoin > 6) return 'Активный участник';
+                if (monthsSinceJoin > 3) return 'Любитель техники';
+                return 'Новичок';
             }
 
             updateUserMeta() {
-                const metaContainer = document.getElementById('userMeta')
-                const metaItems = []
+                const metaContainer = document.getElementById('userMeta');
+                const metaItems = [];
 
                 if (this.userProfile.full_name) {
                     metaItems.push(`
@@ -1287,7 +1396,7 @@
                             <i class="fas fa-user"></i>
                             <span>${this.userProfile.full_name}</span>
                         </div>
-                    `)
+                    `);
                 }
 
                 if (this.userProfile.location) {
@@ -1296,7 +1405,7 @@
                             <i class="fas fa-map-marker-alt"></i>
                             <span>${this.userProfile.location}</span>
                         </div>
-                    `)
+                    `);
                 }
 
                 if (this.userProfile.website) {
@@ -1307,23 +1416,23 @@
                                 ${this.userProfile.website.replace(/^https?:\/\//, '')}
                             </a>
                         </div>
-                    `)
+                    `);
                 }
 
-                const joinDate = this.userProfile.created_at || this.currentUser.created_at
+                const joinDate = this.userProfile.created_at || this.currentUser.created_at;
                 metaItems.push(`
                     <div class="meta-item">
                         <i class="fas fa-calendar"></i>
                         <span>Участник с ${new Date(joinDate).getFullYear()} года</span>
                     </div>
-                `)
+                `);
 
-                metaContainer.innerHTML = metaItems.join('')
+                metaContainer.innerHTML = metaItems.join('');
             }
 
             loadDemoData() {
                 // Демо-данные для закладок
-                const bookmarksList = document.getElementById('bookmarksList')
+                const bookmarksList = document.getElementById('bookmarksList');
                 if (bookmarksList) {
                     bookmarksList.innerHTML = `
                         <div class="bookmark-card">
@@ -1362,11 +1471,11 @@
                                 </div>
                             </div>
                         </div>
-                    `
+                    `;
                 }
 
                 // Демо-данные для активности
-                const activityList = document.getElementById('activityList')
+                const activityList = document.getElementById('activityList');
                 if (activityList) {
                     activityList.innerHTML = `
                         <div class="activity-item">
@@ -1396,11 +1505,11 @@
                                 <div class="activity-time">2 дня назад</div>
                             </div>
                         </div>
-                    `
+                    `;
                 }
 
                 // Демо-данные для статистики
-                const statsGrid = document.getElementById('statsGrid')
+                const statsGrid = document.getElementById('statsGrid');
                 if (statsGrid) {
                     statsGrid.innerHTML = `
                         <div class="stat-card">
@@ -1431,76 +1540,85 @@
                             <h3>3</h3>
                             <p>Полученных достижения</p>
                         </div>
-                    `
+                    `;
                 }
 
                 // Демо-данные для достижений
-                const achievementsList = document.getElementById('achievementsList')
+                const achievementsList = document.getElementById('achievementsList');
                 if (achievementsList) {
                     achievementsList.innerHTML = `
                         <div class="bookmark-card">
                             <div class="bookmark-image">
                                 <img src="https://images.unsplash.com/photo-1518709268805-4e9042af2176?q=80&w=1470" alt="Первые шаги">
                                 <div class="bookmark-type">Достижение</div>
+                        </div>
+                        <div class="bookmark-content">
+                            <h3>Первые шаги</h3>
+                            <div class="bookmark-meta">
+                                <span class="meta-item"><i class="fas fa-trophy"></i> Бронза</span>
                             </div>
-                            <div class="bookmark-content">
-                                <h3>Первые шаги</h3>
-                                <div class="bookmark-meta">
-                                    <span class="meta-item"><i class="fas fa-trophy"></i> Бронза</span>
-                                </div>
-                                <p>Зарегистрируйтесь на сайте и создайте профиль</p>
-                                <div class="bookmark-actions">
-                                    <span class="bookmark-btn" style="background: var(--accent-gold); color: var(--dark-base);">Получено</span>
-                                </div>
+                            <p>Зарегистрируйтесь на сайте и создайте профиль</p>
+                            <div class="bookmark-actions">
+                                <span class="bookmark-btn" style="background: var(--accent-gold); color: var(--dark-base);">Получено</span>
                             </div>
                         </div>
-                        <div class="bookmark-card">
-                            <div class="bookmark-image">
-                                <img src="https://images.unsplash.com/photo-1543946206-6c4ae2a5fc90?q=80&w=1470" alt="Любознательный">
-                                <div class="bookmark-type">Достижение</div>
+                    </div>
+                    <div class="bookmark-card">
+                        <div class="bookmark-image">
+                            <img src="https://images.unsplash.com/photo-1543946206-6c4ae2a5fc90?q=80&w=1470" alt="Любознательный">
+                            <div class="bookmark-type">Достижение</div>
+                        </div>
+                        <div class="bookmark-content">
+                            <h3>Любознательный</h3>
+                            <div class="bookmark-meta">
+                                <span class="meta-item"><i class="fas fa-trophy"></i> Серебро</span>
                             </div>
-                            <div class="bookmark-content">
-                                <h3>Любознательный</h3>
-                                <div class="bookmark-meta">
-                                    <span class="meta-item"><i class="fas fa-trophy"></i> Серебро</span>
-                                </div>
-                                <p>Просмотрите 25 различных страниц с техникой</p>
-                                <div class="bookmark-actions">
-                                    <span class="bookmark-btn" style="background: var(--accent-gold); color: var(--dark-base);">Получено</span>
-                                </div>
+                            <p>Просмотрите 25 различных страниц с техникой</p>
+                            <div class="bookmark-actions">
+                                <span class="bookmark-btn" style="background: var(--accent-gold); color: var(--dark-base);">Получено</span>
                             </div>
                         </div>
-                    `
+                    </div>
+                    `;
                 }
             }
 
             showNotification(message, type = 'info') {
-                const notification = document.createElement('div')
-                notification.className = `notification ${type === 'error' ? 'notification-error' : type === 'warning' ? 'notification-warning' : ''}`
+                const notification = document.createElement('div');
+                notification.className = `notification ${type === 'error' ? 'notification-error' : type === 'warning' ? 'notification-warning' : ''}`;
                 notification.innerHTML = `
                     <div class="notification-content">
                         <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
                         <span>${message}</span>
                     </div>
-                `
+                `;
 
-                document.body.appendChild(notification)
+                document.body.appendChild(notification);
 
                 setTimeout(() => {
-                    notification.style.animation = 'slideOut 0.3s ease'
+                    notification.style.animation = 'slideOut 0.3s ease';
                     setTimeout(() => {
                         if (notification.parentNode) {
-                            notification.parentNode.removeChild(notification)
+                            notification.parentNode.removeChild(notification);
                         }
-                    }, 300)
-                }, 5000)
+                    }, 300);
+                }, 5000);
             }
         }
 
         // Инициализация когда DOM загружен
         document.addEventListener('DOMContentLoaded', () => {
-            new ProfileManager()
-        })
+            console.log('🚀 Initializing ProfileManager...');
+            new ProfileManager();
+        });
+
+        // Слушаем изменения авторизации
+        supabase.auth.onAuthStateChange((event, session) => {
+            console.log('🔐 Auth state changed:', event);
+            if (event === 'SIGNED_OUT') {
+                window.location.href = '/login.html';
+            }
+        });
     </script>
 </body>
 </html>
