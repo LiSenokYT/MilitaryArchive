@@ -719,14 +719,26 @@
     </script>
     <script type="module">
     import { loginUser } from '/js/auth.js';
-    
-    document.getElementById('loginForm').addEventListener('submit', async (e) => {
-        e.preventDefault();
 
+        // Находим форму по тегу form
+        const loginForm = document.querySelector('form');
+
+        if (!loginForm) {
+            console.error('❌ Форма не найдена');
+        } else {
         const form = e.target;
-        const emailInput = form.querySelector('input[type="text"]');
-        const passwordInput = form.querySelector('input[type="password"]');
+            console.log('✅ Форма найдена:', loginForm);
 
+            loginForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+
+                // Находим поля внутри формы
+                const emailInput = loginForm.querySelector('input[type="text"]');
+                const passwordInput = loginForm.querySelector('input[type="password"]');
+
+                console.log('📧 Email input:', emailInput);
+                console('🔑 Password input:', passwordInput);
+                
         if (!emailInput || !passwordInput) {
             alert('❌ Не найдены поля формы');
             return;
@@ -743,7 +755,7 @@
         }
 
         // Показываем загрузку
-        const submitBtn = e.target.querySelector('button[type="submit"]');
+        const submitBtn = loginForm.querySelector('button[type="submit"]');
         const originalText = submitBtn.innerHTML;
         submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Вход...';
         submitBtn.disabled = true;
