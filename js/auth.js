@@ -1,174 +1,155 @@
-// auth.js - ОБНОВЛЕННАЯ ВЕРСИЯ
-import { supabase } from './supabase.js'
+import { supabase } from '/js/supabase.js'
 
-// Функция регистрации
+// Регистрация пользователя
 export async function registerUser(email, password, username) {
-  try {
-    console.log('🔧 Starting registration...', { email, username });
-    
-    // 1. Регистрируем пользователя в Auth
-    const { data: authData, error: authError } = await supabase.auth.signUp({
-      email: email,
-      password: password,
-      options: {
-        data: {
-          username: username
+    try {
+        console.log('🔄 Начинаем регистрацию...')
+        
+        // Проверяем обязательные поля
+        if (!email || !password || !username) {
+            throw new Error('Все поля обязательны для заполнения')
         }
-      }
-    });
-    
-    if (authError) throw authError;
 
-    console.log('✅ User registered in Auth:', authData.user);
+        if (password.length < 6) {
+            throw new Error('Пароль должен содержать минимум 6 символов')
+        }
 
-    if (!authData.user) {
-      throw new Error('Не удалось создать пользователя');
-    }
-
-    // Ждем немного чтобы auth система обновилась
-    await new Promise(resolve => setTimeout(resolve, 1000));
-
-    // 2. Создаем профиль в таблице profiles
-    console.log('🔄 Creating profile in database...');
-    
-    const { data: profileData, error: profileError } = await supabase
-      .from('profiles')
-      .insert({
-        id: authData.user.id,
-        username: username,
-        email: email,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
-      })
-      .select()
-      .single();
-
-    if (profileError) {
-      console.error('❌ Profile creation error:', profileError);
-      
-      // Если ошибка RLS, пробуем через функцию
-      if (profileError.code === '42501') {
-        console.log('🛠 Trying RPC function method...');
-        return await createProfileViaFunction(authData.user, username, email);
-      }
-      
-      throw profileError;
-    }
-
-    console.log('✅ Profile created successfully:', profileData);
-    return { success: true, user: authData.user, profile: profileData };
-    
-  } catch (error) {
-    console.error('🚨 Registration error:', error);
-    return { success: false, error: error.message };
-  }
-}
-
-// Альтернативный метод через RPC функцию
-async function createProfileViaFunction(user, username, email) {
-  try {
-    // Создаем функцию в Supabase для обхода RLS
-    const { data, error } = await supabase.rpc('create_user_profile', {
-      user_id: user.id,
-      user_username: username,
-      user_email: email
-    });
-
-    if (error) throw error;
-
-    // Если функция успешно выполнилась, получаем профиль
-    const { data: profile, error: fetchError } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('id', user.id)
-      .single();
-
-    if (fetchError) throw fetchError;
-
-    return { success: true, profile: profile };
-    
-  } catch (error) {
-    console.error('❌ RPC method failed:', error);
-    throw error;
-  }
-}
-
-// Функция входа
-export async function loginUser(email, password) {
-  try {
-    console.log('🔐 Attempting login...', { email });
-
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email: email,
-      password: password
-    });
-
-    if (error) throw error;
-
-    console.log('✅ Login successful:', data.user);
-    
-    // Гарантируем что профиль существует
-    await ensureProfileExists(data.user);
-    
-    return { success: true, user: data.user };
-
-  } catch (error) {
-    console.error('🚨 Login error:', error);
-    return { success: false, error: error.message };
-  }
-}
-
-// Функция выхода
-export async function logoutUser() {
-  const { error } = await supabase.auth.signOut();
-  if (error) console.error('Logout error:', error);
-}
-
-// Функция для создания профиля если его нет
-export async function ensureProfileExists(user) {
-  try {
-    // Сначала проверяем существует ли профиль
-    const { data: profile, error: fetchError } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('id', user.id)
-      .single();
-
-    if (fetchError && fetchError.code === 'PGRST116') { 
-      // Profile not found - создаем новый профиль
-      console.log('🔄 Profile not found, creating...');
-      
-      const username = user.user_metadata?.username || user.email.split('@')[0];
-      
-      const { data: newProfile, error: createError } = await supabase
-        .from('profiles')
-        .insert({
-          id: user.id,
-          username: username,
-          email: user.email,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
+        // Регистрируем пользователя в Supabase Auth
+        const { data: authData, error: authError } = await supabase.auth.signUp({
+            email: email,
+            password: password,
+            options: {
+                data: {
+                    username: username
+                }
+            }
         })
-        .select()
-        .single();
 
-      if (createError) {
-        console.error('❌ Failed to create profile:', createError);
-        throw createError;
-      }
-      
-      console.log('✅ Profile created:', newProfile);
-      return { success: true, profile: newProfile };
-      
-    } else if (fetchError) {
-      throw fetchError;
+        if (authError) {
+            console.error('❌ Ошибка аутентификации:', authError)
+            throw new Error(authError.message)
+        }
+
+        if (!authData.user) {
+            throw new Error('Не удалось создать пользователя')
+        }
+
+        console.log('✅ Пользователь создан в Auth:', authData.user.id)
+
+        // Создаем профиль в таблице profiles
+        const { error: profileError } = await supabase
+            .from('profiles')
+            .insert([
+                {
+                    id: authData.user.id,
+                    username: username,
+                    email: email,
+                    created_at: new Date().toISOString(),
+                    updated_at: new Date().toISOString()
+                }
+            ])
+
+        if (profileError) {
+            console.error('❌ Ошибка создания профиля:', profileError)
+            
+            // Если не удалось создать профиль, удаляем пользователя из auth
+            await supabase.auth.admin.deleteUser(authData.user.id)
+            throw new Error('Ошибка создания профиля: ' + profileError.message)
+        }
+
+        console.log('✅ Профиль создан успешно')
+        
+        return {
+            success: true,
+            user: authData.user,
+            message: 'Регистрация успешна! Проверьте вашу почту для подтверждения.'
+        }
+
+    } catch (error) {
+        console.error('🚨 Критическая ошибка регистрации:', error)
+        return {
+            success: false,
+            error: error.message
+        }
     }
-    
-    console.log('✅ Profile exists:', profile);
-    return { success: true, profile: profile };
-    
-  } catch (error) {
-    console.error('❌ Error ensuring profile exists:', error);
-    return { success: false, error: error.message };
-  }
+}
+
+// Вход пользователя
+export async function loginUser(email, password) {
+    try {
+        console.log('🔄 Пытаемся войти...')
+        
+        if (!email || !password) {
+            throw new Error('Email и пароль обязательны')
+        }
+
+        const { data, error } = await supabase.auth.signInWithPassword({
+            email: email,
+            password: password
+        })
+
+        if (error) {
+            console.error('❌ Ошибка входа:', error)
+            throw new Error(error.message)
+        }
+
+        if (!data.user) {
+            throw new Error('Пользователь не найден')
+        }
+
+        console.log('✅ Успешный вход:', data.user.id)
+        
+        return {
+            success: true,
+            user: data.user
+        }
+
+    } catch (error) {
+        console.error('🚨 Ошибка входа:', error)
+        return {
+            success: false,
+            error: error.message
+        }
+    }
+}
+
+// Выход пользователя
+export async function logoutUser() {
+    try {
+        const { error } = await supabase.auth.signOut()
+        if (error) throw error
+        
+        return { success: true }
+    } catch (error) {
+        console.error('❌ Ошибка выхода:', error)
+        return { success: false, error: error.message }
+    }
+}
+
+// Проверка текущего пользователя
+export async function getCurrentUser() {
+    try {
+        const { data: { user }, error } = await supabase.auth.getUser()
+        
+        if (error) throw error
+        return { user, error: null }
+    } catch (error) {
+        return { user: null, error }
+    }
+}
+
+// Получение профиля пользователя
+export async function getUserProfile(userId) {
+    try {
+        const { data: profile, error } = await supabase
+            .from('profiles')
+            .select('*')
+            .eq('id', userId)
+            .single()
+
+        if (error) throw error
+        return { profile, error: null }
+    } catch (error) {
+        return { profile: null, error }
+    }
 }
