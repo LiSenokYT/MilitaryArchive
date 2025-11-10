@@ -724,8 +724,16 @@
         e.preventDefault();
 
         const form = e.target;
-        const email = form.querySelector('input[type="text"]').value;
-        const password = form.querySelector('input[type="password"]').value;
+        const emailInput = form.querySelector('input[type="text"]');
+        const passwordInput = form.querySelector('input[type="password"]');
+
+        if (!emailInput || !passwordInput) {
+            alert('❌ Не найдены поля формы');
+            return;
+        }
+
+        const email = emailInput.value;
+        const password = passwordInput.value;
 
         console.log('🔐 Attempting login:', email);
 
@@ -733,8 +741,15 @@
             alert('❌ Заполните все поля');
             return;
         }
-        
-        const result = await loginUser(email, password);
+
+        // Показываем загрузку
+        const submitBtn = e.target.querySelector('button[type="submit"]');
+        const originalText = submitBtn.innerHTML;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Вход...';
+        submitBtn.disabled = true;
+
+        try {
+            const result = await loginUser(email, password);
 
         if (result.success) {
             alert('✅ Вход выполнен!');
@@ -745,7 +760,15 @@
             alert('❌ Ошибка входа: ' + result.error);
             console.error('🚨 Login error:', result.error);
         }
-    });
+    } catch (error) {
+        alert('❌ Неожиданная ошибка: ' + error.message);
+        console.error('🚨 Unexpected error:', error);
+    } finally {
+        // Восстанавливаем кнопку
+        submitBtn.innerHTML = originalText;
+        submitBtn.disabled = false;
+    }
+});
 </script>
 </body>
 </html>
